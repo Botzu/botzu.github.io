@@ -1,13 +1,23 @@
-pragma solidity ^0.5.0;
+pragma solidity 0.8.9;
 
 contract BlockchatBlockchain {
-	address[16] public blockchatters;
-	//adding a user
-	struct 
-	function addUser(address _address) public {
 
+	event NewUser(uint userId, string name);
+
+	struct User {
+		string name;
 	}
-	function getUsers() public view returns(address _addresses[]) {
-		return blockchatters;
+
+	User[] public blockchatters;
+
+	mapping (uint => address) public userToAddress;
+	mapping (address => uint) usersCount;
+
+	function _createUser(string memory _name) internal {
+		blockchatters.push(User(_name));
+		uint id = blockchatters.length - 1;
+		userToAddress[id] = msg.sender;
+		usersCount[msg.sender]++;
+		emit NewUser(id,_name);
 	}
 }
