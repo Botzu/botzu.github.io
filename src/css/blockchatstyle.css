@@ -1,0 +1,104 @@
+/*
+Daniel Timko, Harry Hakobyan, Mike Sharko, Atika Singh
+CS537 Fall 2021
+Project Blockchat-Blockchain
+*/
+
+// blockchat message box CSS
+div.container {
+	height: 100vh;
+}
+
+div.blockchat-container {
+	height: calc(100vh - 400px);
+  	padding: 20px;
+  	border: 3px solid #f1f1f1;
+  	margin: 10px 0;
+}
+
+.message-container {
+	height: 100px;
+	border: 2px solid black;
+	margin-bottom: 2px;
+}
+
+.message-container::after {
+	content: "";
+	clear: both;
+	display: table;
+} 
+
+.blockchat-message {
+	height: 50px;
+	font-size: 15px;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+.blockchat-time-container {
+	height: 25px;
+	padding: 1.5em 0;
+}
+
+img.pfp-sender {
+	float: left;
+	height: 50px;
+	width: 50px;
+}
+
+img.pfp-receiver {
+	float: right;
+	height: 50px;
+	width: 50px;
+}
+
+.sent-time-sender {
+	float: right;
+  	color: #999;
+}
+
+.sent-time-receiver {
+	float: left;
+	color: #aaa;
+}
+
+/* Add styles to the form container */
+.chat-container {
+  max-width: 95%;
+  padding: 10px;
+  background-color: white;
+}
+
+/* Full-width textarea */
+.chat-container textarea {
+  width: calc(100% - 20px);
+  padding: 15px;
+  margin: 5px 0 22px 0;
+  border: none;
+  background: #f1f1f1;
+  resize: none;
+  min-height: 100px;
+}
+
+/* When the textarea gets focus, do something */
+.chat-container textarea:focus {
+  background-color: #ddd;
+  outline: none;
+}
+
+/* Set a style for the submit/login button */
+.chat-container .btn {
+  background-color: #04AA6D;
+  color: white;
+  padding: 16px 20px;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  margin-bottom:10px;
+  opacity: 0.8;
+}
+
+/* Add some hover effects to buttons */
+.chat-container .btn:hover, .open-button:hover {
+  opacity: 1;
+}

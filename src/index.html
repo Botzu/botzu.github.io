@@ -9,6 +9,8 @@
 
     <!-- Bootstrap -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- Blockchat CSS -->
+    <link href="css/blockchatstyle.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -26,10 +28,43 @@
           <hr/>
           <br/>
           <div class="row">
-            <div class="col-xs-10 col-sm-8">
-              <h1 class="text-center"> chat box content here</h1>
+            <div class="col-xs-1 col-sm-2">
+              <ul class="list-group">
+                <li class="list-group-item">Links</li>
+                <li class="list-group-item">Link 1</li>
+                <li class="list-group-item">Link 2</li>
+                <li class="list-group-item">Link 3</li>
+                <li class="list-group-item">Link 4</li>
+              </ul>
             </div>
-            <div class="col-xs-2 col-sm-4">
+            <div class="col-xs-10 col-sm-8">
+              <div class="chat-container"> 
+                <h1 class="text-center">chat box</h1>
+                <div class="blockchat-container">
+                  <div class="message-container">
+                    <div class="blockchat-message">
+                      <img class="pfp-sender" src="images/defaultpfp.png" />
+                        Hello?
+                    </div>
+                    <div class="blockchat-time-container sent-time-sender">
+                        10:00 PM
+                    </div>
+                  </div>
+                  <div class="message-container">
+                    <div class="blockchat-message">
+                      <img class="pfp-receiver" src="images/defaultpfp.png" />
+                        Sup?
+                    </div>
+                    <div class="blockchat-time-container sent-time-receiver">
+                        10:01 PM
+                    </div>
+                  </div>
+                </div>
+                <textarea placeholder="Type message.." name="msg" required=""></textarea>
+                <button type="button" class="btn">Send</button>
+              </div>
+            </div>
+            <div class="col-xs-1 col-sm-2">
               <ul class="list-group">
                 <li class="list-group-item">Friend 1</li>
                 <li class="list-group-item">Friend 2</li>
