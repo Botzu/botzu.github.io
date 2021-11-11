@@ -1,0 +1,30 @@
+{
+  "name": "blockchat-blockchain",
+  "version": "1.0.0",
+  "description": "A DApp for chatting on the ethereum blockchain",
+  "main": "truffle-config.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "lite-server": "^2.6.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "dev": "lite-server",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Botzu/blockchat-blockchain.git"
+  },
+  "keywords": [
+    "blockchat-blockchain"
+  ],
+  "author": "Daniel Timko,Harry Hakobyan, Atika Singh, Mikhail Sharko",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Botzu/blockchat-blockchain/issues"
+  },
+  "homepage": "https://github.com/Botzu/blockchat-blockchain#readme"
+}
