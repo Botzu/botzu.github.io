@@ -3,6 +3,7 @@ App = {
   contracts: {},
 
   init: async function() {
+    // load templates here and define variables for rows
     return await App.initWeb3();
   },
 
@@ -32,14 +33,56 @@ App = {
   },
 
   initContract: function() {
+    $.getJSON('BlockchatBlockchain.json', function(data) {
+      // Get the necessary contract artifact file and instantiate it with @truffle/contract
+      var BlockchatBlockchainArtifact = data;
+      App.contracts.BlockchatBlockchain = TruffleContract(BlockchatBlockchainArtifact);
 
+      // set the provider for contract
+      App.contracts.BlockchatBlockchain.setProvider(App.web3Provider);
+    });
     return App.bindEvents();
   },
 
   bindEvents: function() {
+    $(document).on('click', '.sendmsg', App.handleMessage);
+    // $(document).on('click', '.nickname', App.handleNickname);
+  },
+
+  handleMessage: function(event) {
+    event.preventDefault();
+    // grab the message from the text area to send
+    var messageText = $('.msg-text-area').val();
+    // make sure that you are logged in before you try to send
+    web3.eth.getAccounts(function(error, accounts) {
+      if (error) {
+        console.log(error);
+      }
+      // this is the wallet address
+      var account = accounts[0];
+      //testing if its sending all the correct information
+      App.contracts.BlockchatBlockchain.deployed().then(function(instance) {
+        blockchatInstance = instance;
+
+        // Execute blockchat transaction example as transaction
+        //blockchatInstance._createUser("Daniel", {from: account, gas: 1000000, gasPrice: web3.toWei(2, 'gwei')});
+        
+        //return blockchatInstance._returnUser({from: account});
+      });
+
+      console.log("current sender is "+account+" and the current message to send is "+messageText);
+    });
+  },
+
+  loadloginpage: function() {
+    // get user address and nickname before entering main page of site
 
   },
 
+  checkLogin: function() {
+    // when the user enters the DApp check if they are logged into metamask and if a nickname is set
+
+  }
 
 };
 
