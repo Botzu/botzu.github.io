@@ -31,5 +31,7 @@ contract BlockchatBlockchain {
 		//emit NewUser(id,_name);
 
 		//mike changes
+
+		//dan changes
 	}
 }
