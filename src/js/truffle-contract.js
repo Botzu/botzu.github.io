@@ -10,6 +10,7 @@ if (typeof Web3 == "object" && Object.keys(Web3).length == 0) {
   Web3 = global.Web3;
 }
 
+
 var contract = (function(module) {
 
   // Planned for future features, logging, etc.
