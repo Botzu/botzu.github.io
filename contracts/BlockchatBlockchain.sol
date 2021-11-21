@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 // Daniel Timko, Harry Hokbyan, Mikhail Sharko, Atika Singh
-pragma solidity 0.8.9;
+pragma solidity >=0.4.22 <0.9.0;
 
 contract BlockchatBlockchain {
-
+	
 	event NewUser(uint userId, string name);
 
 	struct User {
@@ -16,7 +16,7 @@ contract BlockchatBlockchain {
 	mapping (address => uint) usersCount;
 
 	function _returnUser() public view returns(string memory) {
-		require(usersCount[msg.sender] == 0);
+		require(usersCount[msg.sender] > 0);
 		return addressToName[msg.sender];
 	}
 
@@ -30,8 +30,5 @@ contract BlockchatBlockchain {
 		addressToName[msg.sender] = _name;
 		//emit NewUser(id,_name);
 
-		//mike changes
-
-		//dan changes
 	}
 }

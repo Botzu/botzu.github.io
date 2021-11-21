@@ -49,10 +49,33 @@ App = {
     // $(document).on('click', '.nickname', App.handleNickname);
   },
 
+  returnMessage: function() {
+    var adoptionInstance;
+    web3.eth.getAccounts(function(error, accounts) {
+      if (error) {
+        console.log(error);
+      }
+      var account = accounts[0];
+      App.contracts.BlockchatBlockchain.deployed().then(function(instance) {
+        blockchatInstance = instance;
+
+        return blockchatInstance._returnUser.call({from: account});
+      }).then(function(Blockname) {
+      if(Blockname === "Daniel")
+      {
+        console.log("success");
+      }
+      }).catch(function(err) {
+        console.log(err.message);
+      });
+    });
+  },
+
   handleMessage: function(event) {
     event.preventDefault();
     // grab the message from the text area to send
     var messageText = $('.msg-text-area').val();
+    var blockchatInstance;
     // make sure that you are logged in before you try to send
     web3.eth.getAccounts(function(error, accounts) {
       if (error) {
@@ -65,9 +88,13 @@ App = {
         blockchatInstance = instance;
 
         // Execute blockchat transaction example as transaction
-        //blockchatInstance._createUser("Daniel", {from: account, gas: 1000000, gasPrice: web3.toWei(2, 'gwei')});
+        blockchatInstance._createUser("Daniel", {from: account, gas: 1000000, gasPrice: web3.toWei(2, 'gwei')});
         
-        //return blockchatInstance._returnUser({from: account});
+      }).then(function(result) {
+        //console.log(result);
+        return App.returnMessage();
+      }).catch(function(err) {
+        console.log(err.message);
       });
 
       console.log("current sender is "+account+" and the current message to send is "+messageText);
