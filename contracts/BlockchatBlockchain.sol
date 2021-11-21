@@ -30,5 +30,13 @@ contract BlockchatBlockchain {
 		addressToName[msg.sender] = _name;
 		//emit NewUser(id,_name);
 
+<<<<<<< HEAD
+=======
+		//mike changes
+
+		//dan changes
+
+		//dfgdfgdfgdf
+>>>>>>> bbce6c174a754f14009b55b85a50a0dcd6c2e061
 	}
 }
