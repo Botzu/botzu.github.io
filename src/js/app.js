@@ -49,26 +49,21 @@ App = {
     // $(document).on('click', '.nickname', App.handleNickname);
   },
 
-  returnMessage: function() {
-    var adoptionInstance;
-    web3.eth.getAccounts(function(error, accounts) {
-      if (error) {
-        console.log(error);
-      }
-      var account = accounts[0];
-      App.contracts.BlockchatBlockchain.deployed().then(function(instance) {
-        blockchatInstance = instance;
-
-        return blockchatInstance._returnUser.call({from: account});
-      }).then(function(Blockname) {
-      if(Blockname === "Daniel")
+  returnMessage: async function(instance, account) {
+    var returnName = await instance._returnUser.call({from: account});
+    if(returnName === "Daniel")
       {
-        console.log("success");
+        console.log("Did I do it:" + returnName);
       }
-      }).catch(function(err) {
-        console.log(err.message);
-      });
-    });
+    else
+      {
+        console.log("something went wrong");
+      }
+  },
+
+  handleCreateUser: async function(instance, account) {
+    var Blockname = await instance._createUser("Daniel", {from: account, gas: 1000000, gasPrice: web3.toWei(2, 'gwei')});
+    console.log(Blockname);
   },
 
   handleMessage: function(event) {
@@ -76,23 +71,23 @@ App = {
     // grab the message from the text area to send
     var messageText = $('.msg-text-area').val();
     var blockchatInstance;
+    var account;
     // make sure that you are logged in before you try to send
     web3.eth.getAccounts(function(error, accounts) {
       if (error) {
         console.log(error);
       }
       // this is the wallet address
-      var account = accounts[0];
+      account = accounts[0];
       //testing if its sending all the correct information
       App.contracts.BlockchatBlockchain.deployed().then(function(instance) {
         blockchatInstance = instance;
 
         // Execute blockchat transaction example as transaction
-        blockchatInstance._createUser("Daniel", {from: account, gas: 1000000, gasPrice: web3.toWei(2, 'gwei')});
-        
+        return App.returnMessage(blockchatInstance, account);
       }).then(function(result) {
-        //console.log(result);
-        return App.returnMessage();
+        console.log(result);
+        //return App.returnMessage(blockchatInstance, account);
       }).catch(function(err) {
         console.log(err.message);
       });

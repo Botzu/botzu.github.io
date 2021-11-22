@@ -10,7 +10,7 @@ contract('BlockchatArtifact', () => {
 		assert(data.toString() === '10');
 		*/
 		await Blockchat._createUser("Daniel");
-		const name = await Blockchat._returnUser();
+	    const name = await Blockchat._returnUser();
 		assert(name.toString() === "Daniel");
 	});
 });
