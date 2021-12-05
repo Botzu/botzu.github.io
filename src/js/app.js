@@ -40,30 +40,99 @@ App = {
 
       // set the provider for contract
       App.contracts.BlockchatBlockchain.setProvider(App.web3Provider);
+      return App.checkUser();
     });
     return App.bindEvents();
   },
 
   bindEvents: function() {
     $(document).on('click', '.sendmsg', App.handleMessage);
-    // $(document).on('click', '.nickname', App.handleNickname);
+    $(document).on('click', '.regUser', App.handleNickname);
+  },
+
+  checkUser: async function() {
+    var blockchatInstance;
+    var account;
+    web3.eth.getAccounts(function(error, accounts) {
+      if (error) {
+        console.log(error);
+      }
+      App.contracts.BlockchatBlockchain.deployed().then(function(instance) {
+        blockchatInstance = instance;
+        return blockchatInstance._returnUser.call({from: account});
+      }).then(function(addressToName) {
+          $('#welcome-back').html("Welcome back, "+addressToName);
+      }).catch(function(err) {
+        //console.log(err.message);
+          $('#content-container').addClass('block-content');
+          var tmpString = "";
+          tmpString += "<div class=\"modal-content\">";
+          tmpString += "<div class=\"modal-header\">";
+          tmpString += "<h2>Please create an account to continue</h2>";
+          tmpString += "</div>";
+          tmpString += "<hr />";
+          tmpString += "&nbsp;This project requires a metamask account to access its contents."
+          tmpString += "<br />"
+          tmpString += "&nbsp;Please login in with your metamask account and then register below to begin."     
+          tmpString += "<br /> <hr>";   
+          tmpString += "<div class=\"modal-body\">";
+          tmpString += "Please provide a username to start chatting.";
+          tmpString += "<br /><br />";
+          tmpString += "</div>";
+          tmpString += "<div class=\"modal-footer\">";
+          tmpString += "<label for=\"name\">Name (5 to 15 characters):</label>";
+          tmpString += "<input type=\"text\" id=\"userName\" name=\"name\" required minlength=\"5\" maxlength=\"15\" size=\"12\">";
+          tmpString += "<button type=\"button\" class=\"modal-btn regUser\">Register Name</button>";
+          tmpString += "</div>";
+          tmpString += "</div>";
+          var handle = document.getElementById('myModal');
+          handle.innerHTML = tmpString;
+          $('#myModal').css("display","block");
+        });
+    });
   },
 
   returnMessage: async function(instance, account) {
     var returnName = await instance._returnUser.call({from: account});
-    if(returnName === "Daniel")
-      {
-        console.log("Did I do it:" + returnName);
-      }
-    else
-      {
-        console.log("something went wrong");
-      }
   },
 
-  handleCreateUser: async function(instance, account) {
-    var Blockname = await instance._createUser("Daniel", {from: account, gas: 1000000, gasPrice: web3.toWei(2, 'gwei')});
+  handleCreateUser: async function(instance, account, nickname) {
+    var Blockname = await instance._createUser(nickname, {from: account, gas: 1000000, gasPrice: web3.toWei(1, 'gwei')});
     console.log(Blockname);
+  },
+
+  handleNickname: function(event) {
+    event.preventDefault();
+    // grab the message from the text area to send
+    var userName = $('#userName').val();
+    var blockchatInstance;
+    var account;
+    // make sure that you are logged in before you try to send
+    web3.eth.getAccounts(function(error, accounts) {
+      if (error) {
+        console.log(error);
+      }
+      // this is the wallet address
+      account = accounts[0];
+      //testing if its sending all the correct information
+      App.contracts.BlockchatBlockchain.deployed().then(function(instance) {
+        blockchatInstance = instance;
+
+        // Execute blockchat transaction example as transaction
+        //
+        //return App.returnMessage(blockchatInstance, account);
+        return App.handleCreateUser(blockchatInstance, account, userName);
+      }).then(function(result) {
+        //console.log(result);
+        console.log("account successfully created");
+        $('#myModal').css("display","none");
+        $('#content-container').removeClass('block-content');
+        $('#welcome-back').html("Welcome back, "+userName);
+        //return App.returnMessage(blockchatInstance, account);
+      }).catch(function(err) {
+        console.log(err.message);
+      });
+    });
   },
 
   handleMessage: function(event) {
@@ -84,9 +153,12 @@ App = {
         blockchatInstance = instance;
 
         // Execute blockchat transaction example as transaction
+        //
+        //return App.returnMessage(blockchatInstance, account);
         return App.returnMessage(blockchatInstance, account);
       }).then(function(result) {
-        console.log(result);
+        //console.log(result);
+        console.log("Message successfully added");
         //return App.returnMessage(blockchatInstance, account);
       }).catch(function(err) {
         console.log(err.message);
@@ -94,16 +166,6 @@ App = {
 
       console.log("current sender is "+account+" and the current message to send is "+messageText);
     });
-  },
-
-  loadloginpage: function() {
-    // get user address and nickname before entering main page of site
-
-  },
-
-  checkLogin: function() {
-    // when the user enters the DApp check if they are logged into metamask and if a nickname is set
-
   }
 
 };

@@ -3,10 +3,14 @@ Daniel Timko, Harry Hakobyan, Mike Sharko, Atika Singh
 CS537 Fall 2021
 Project Blockchat-Blockchain
 */
-
+/*    Main screen style  */
 // blockchat message box CSS
 div.container {
 	height: 100vh;
+}
+
+.block-content {
+	-webkit-filter: blur(5px) grayscale(90%);
 }
 
 div.blockchat-container {
@@ -101,4 +105,87 @@ img.pfp-receiver {
 /* Add some hover effects to buttons */
 .chat-container .btn:hover, .open-button:hover {
   opacity: 1;
+}
+
+/* Set style for the modal */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 10; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* #########  Modal Content/Box  ###### */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 50%; /* Could be more or less, depending on screen size */
+}
+
+/* Modal Header */
+.modal-header {
+    padding: 2px 16px;
+    background-color: #5c84b8;
+    color: white;
+    border-radius:inherit;
+}
+
+/* Modal Body */
+.modal-body {padding: 2px 16px;}
+
+/* Modal Footer */
+.modal-footer {
+    padding: 2px 16px;
+    background-color: #5c84b8;
+    color: white;
+    height: 80px;
+    justify-content: left;
+}
+
+/* Modal Content */
+.modal-content {
+    position: relative;
+    background-color: #fefefe;
+    margin: 2% auto;
+    padding: 0;
+    border: 1px solid #888;
+    width: 50%;
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+    animation-name: animatetop;
+    animation-duration: 0.4s;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+
+.modal-btn {
+    background-color: #414141;
+    color: white;
+    border: 1px solid white;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border-radius: 0.25rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    opacity: 0.8;
+}
+
+.modal-content .modal-btn:hover {
+  opacity: 1;
+}
+
+/* Add Animation */
+@keyframes animatetop {
+    from {top: -300px; opacity: 0}
+    to {top: 0; opacity: 1}
 }
