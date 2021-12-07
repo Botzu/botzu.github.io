@@ -110,10 +110,10 @@ App = {
     console.log(Blockname);
   },
 
-  getMsgTimestamp: async function(instance) {
+  getMessages: async function(instance, receiver, account) {
     //var tempTime = await instance.getMessageTimestamp.call();
-    const tempTime = Date.now();
-    console.log(tempTime);
+    const messages = await instance.getMessageArray.call(receiver, {from: account});
+    console.log(messages);
   },
 
   handleCreateMessage: async function(instance, receiver, message, account) {
@@ -207,11 +207,11 @@ App = {
 
         // Execute blockchat transaction example as transaction
         //
-        //return App.returnMessage(blockchatInstance, account);
-        return App.handleCreateMessage(blockmessageInstance, receiverAccount, messageText, account);
+        //return App.handleCreateMessage(blockmessageInstance, receiverAccount, messageText, account);
+        return App.getMessages(blockmessageInstance, receiverAccount, account);
       }).then(function(result) {
         //console.log(result);
-        console.log("Message successfully added");
+        console.log("Message successfully received");
         //return App.returnMessage(blockchatInstance, account);
       }).catch(function(err) {
         console.log(err.message);
