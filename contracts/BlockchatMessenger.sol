@@ -64,6 +64,10 @@ contract BlockchatMessenger {
 
     	return (msgContent,rAddr,timeStamp); 
 	}
+
+	function getMessageByIndex(uint _index) public view returns(string memory) {
+		return blockmessages[_index].message;
+	}
 	// call this to get a timestamp of current block
 	function getMessageTimestamp() public view returns (uint256){
         return block.timestamp;

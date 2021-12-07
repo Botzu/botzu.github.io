@@ -101,8 +101,9 @@ App = {
     });
   },
 
-  returnMessage: async function(instance, account) {
-    var returnName = await instance._returnUser.call({from: account});
+  returnMessage: async function(instance, index) {
+    var returnMessage = await instance.getMessageByIndex.call(index);
+    console.log(returnMessage);
   },
 
   handleCreateUser: async function(instance, account, nickname) {
@@ -111,16 +112,14 @@ App = {
   },
 
   getMessages: async function(instance, receiver, account) {
-    //var tempTime = await instance.getMessageTimestamp.call();
     const messages = await instance.getMessageArray.call(receiver, {from: account});
     console.log(messages);
   },
 
   handleCreateMessage: async function(instance, receiver, message, account) {
     const tempTime = Date.now();
-    //console.log("Sender is  "+account+" the receiver is  "+receiver+" and the message is \n "+message);
+    console.log("Sender is  "+account+" the receiver is  "+receiver+" and the message is \n "+message);
     var newMessage = await instance.createMessage(receiver, message, tempTime, {from: account, gas: 1000000, gasPrice: web3.toWei(1, 'gwei')});
-    console.log(newMessage);
   },
 
   handleTimeStamp: function(event) {
@@ -204,11 +203,11 @@ App = {
       //testing if its sending all the correct information
       App.contracts.BlockchatMessenger.deployed().then(function(instance) {
         blockmessageInstance = instance;
-
+        var index = 3;
         // Execute blockchat transaction example as transaction
-        //
+        return App.returnMessage(blockmessageInstance, index);
         //return App.handleCreateMessage(blockmessageInstance, receiverAccount, messageText, account);
-        return App.getMessages(blockmessageInstance, receiverAccount, account);
+        //return App.getMessages(blockmessageInstance, receiverAccount, account);
       }).then(function(result) {
         //console.log(result);
         console.log("Message successfully received");
