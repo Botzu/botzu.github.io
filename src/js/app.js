@@ -42,6 +42,15 @@ App = {
       App.contracts.BlockchatBlockchain.setProvider(App.web3Provider);
       return App.checkUser();
     });
+    $.getJSON('BlockchatMessenger.json', function(data) {
+      // Get the necessary contract artifact file and instantiate it with @truffle/contract
+      var BlockchatMessengerArtifact = data;
+      App.contracts.BlockchatMessenger = TruffleContract(BlockchatMessengerArtifact);
+
+      // set the provider for contract
+      App.contracts.BlockchatMessenger.setProvider(App.web3Provider);
+      //return App.checkUser();
+    });
     return App.bindEvents();
   },
 
@@ -101,6 +110,48 @@ App = {
     console.log(Blockname);
   },
 
+  getMsgTimestamp: async function(instance) {
+    //var tempTime = await instance.getMessageTimestamp.call();
+    const tempTime = Date.now();
+    console.log(tempTime);
+  },
+
+  handleCreateMessage: async function(instance, receiver, message, account) {
+    const tempTime = Date.now();
+    //console.log("Sender is  "+account+" the receiver is  "+receiver+" and the message is \n "+message);
+    var newMessage = await instance.createMessage(receiver, message, tempTime, {from: account, gas: 1000000, gasPrice: web3.toWei(1, 'gwei')});
+    console.log(newMessage);
+  },
+
+  handleTimeStamp: function(event) {
+   event.preventDefault();
+    // grab the message from the text area to send
+    var messageInstance;
+    var account;
+    // make sure that you are logged in before you try to send
+    web3.eth.getAccounts(function(error, accounts) {
+      if (error) {
+        console.log(error);
+      }
+      // this is the wallet address
+      account = accounts[0];
+      //testing if its sending all the correct information
+      App.contracts.BlockchatMessenger.deployed().then(function(instance) {
+        messageInstance = instance;
+
+        // Execute blockchat transaction example as transaction
+        //
+        //return App.returnMessage(blockchatInstance, account);
+        return App.getMsgTimestamp(messageInstance);
+      }).then(function(result) {
+        //console.log(result);
+        //return App.returnMessage(blockchatInstance, account);
+      }).catch(function(err) {
+        console.log(err.message);
+      });
+    });
+  },
+
   handleNickname: function(event) {
     event.preventDefault();
     // grab the message from the text area to send
@@ -141,6 +192,7 @@ App = {
     var messageText = $('.msg-text-area').val();
     var blockchatInstance;
     var account;
+    var receiverAccount;
     // make sure that you are logged in before you try to send
     web3.eth.getAccounts(function(error, accounts) {
       if (error) {
@@ -148,14 +200,15 @@ App = {
       }
       // this is the wallet address
       account = accounts[0];
+      receiverAccount = "0x5516d794F2303Ad9A1B683A8ec91Ee1ebC120537";
       //testing if its sending all the correct information
-      App.contracts.BlockchatBlockchain.deployed().then(function(instance) {
-        blockchatInstance = instance;
+      App.contracts.BlockchatMessenger.deployed().then(function(instance) {
+        blockmessageInstance = instance;
 
         // Execute blockchat transaction example as transaction
         //
         //return App.returnMessage(blockchatInstance, account);
-        return App.returnMessage(blockchatInstance, account);
+        return App.handleCreateMessage(blockmessageInstance, receiverAccount, messageText, account);
       }).then(function(result) {
         //console.log(result);
         console.log("Message successfully added");
@@ -164,7 +217,7 @@ App = {
         console.log(err.message);
       });
 
-      console.log("current sender is "+account+" and the current message to send is "+messageText);
+      //console.log("current sender is "+account+" and the current message to send is "+messageText);
     });
   }
 
