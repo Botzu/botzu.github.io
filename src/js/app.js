@@ -49,7 +49,7 @@ App = {
 
       // set the provider for contract
       App.contracts.BlockchatMessenger.setProvider(App.web3Provider);
-      //return App.checkUser();
+      //return App.checkMessages();
     });
     return App.bindEvents();
   },
@@ -59,6 +59,29 @@ App = {
     $(document).on('click', '.regUser', App.handleNickname);
   },
 
+  checkMessages: async function() {
+    var messageInstance;
+    var account;
+    web3.eth.getAccounts(function(error, accounts) {
+      if (error) {
+        console.log(error);
+      }
+      account = accounts[0];
+
+      App.contracts.BlockchatMessenger.deployed().then(function(instance) {
+        messageInstance = instance;
+        receiverAccount = "0x5516d794F2303Ad9A1B683A8ec91Ee1ebC120537";
+        //check messages here
+        
+        console.log(results);
+      }).then(function(result) {
+
+      }).catch(function(err) {
+
+      });
+    });
+  },
+
   checkUser: async function() {
     var blockchatInstance;
     var account;
@@ -66,6 +89,8 @@ App = {
       if (error) {
         console.log(error);
       }
+      account = accounts[0];
+
       App.contracts.BlockchatBlockchain.deployed().then(function(instance) {
         blockchatInstance = instance;
         return blockchatInstance._returnUser.call({from: account});
@@ -101,6 +126,11 @@ App = {
     });
   },
 
+  returnMessageArray: async function(instance, receiver) {
+    //var returnMsgArray = await instance.getMessagesbySender.call();
+    console.log(returnMsgArray);
+  },
+
   returnMessage: async function(instance, index) {
     var returnMessage = await instance.getMessageByIndex.call(index);
     console.log(returnMessage);
@@ -113,7 +143,36 @@ App = {
 
   getMessages: async function(instance, receiver, account) {
     const messages = await instance.getMessageArray.call(receiver, {from: account});
-    console.log(messages);
+    //console.log(messages);
+    var indexArray = [];
+    var tStampArray = [];
+    var senderAddr = [];
+    var i = 0;
+    messages.forEach(function(data1,data2,data3){
+      switch(i) {
+        case 0:
+          senderAddr = data3[0];
+          break;
+        case 1:
+          tStampArray = data3[1];
+          break;
+        case 2:
+          indexArray = data3[2];
+          break;
+        default:
+      }
+      i++;
+    });
+    for(let x = 0; x < indexArray.length; x++)
+    {
+      App.returnMessage(instance,indexArray[x].c[0]);
+    }
+    /*
+    indexArray.forEach(function(data) {
+      console.log(data[0]);
+      App.returnMessage(instance,data[0]);
+    });
+    */
   },
 
   handleCreateMessage: async function(instance, receiver, message, account) {
@@ -203,11 +262,11 @@ App = {
       //testing if its sending all the correct information
       App.contracts.BlockchatMessenger.deployed().then(function(instance) {
         blockmessageInstance = instance;
-        var index = 3;
+        //var index = 0;
         // Execute blockchat transaction example as transaction
-        return App.returnMessage(blockmessageInstance, index);
+        //return App.returnMessage(blockmessageInstance, index);
         //return App.handleCreateMessage(blockmessageInstance, receiverAccount, messageText, account);
-        //return App.getMessages(blockmessageInstance, receiverAccount, account);
+        return App.getMessages(blockmessageInstance, receiverAccount, account);
       }).then(function(result) {
         //console.log(result);
         console.log("Message successfully received");
