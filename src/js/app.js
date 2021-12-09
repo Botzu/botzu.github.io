@@ -1,12 +1,12 @@
 App = {
   web3Provider: null,
   contracts: {},
-
+  // pre-defined function from truffle
   init: async function() {
     // load templates here and define variables for rows
     return await App.initWeb3();
   },
-
+  // pre-defined functions from truffle, initiates web3 and sets providers
   initWeb3: async function() {
     // Modern dapp browsers...
     if (window.ethereum) {
@@ -32,6 +32,7 @@ App = {
     return App.initContract();
   },
 
+  // this is where we initialize contract elements
   initContract: function() {
     $.getJSON('BlockchatBlockchain.json', function(data) {
       // Get the necessary contract artifact file and instantiate it with @truffle/contract
@@ -49,16 +50,73 @@ App = {
 
       // set the provider for contract
       App.contracts.BlockchatMessenger.setProvider(App.web3Provider);
-      //return App.checkMessages();
+      return App.initMessages();
     });
     return App.bindEvents();
   },
-
+  // binding events to buttons
   bindEvents: function() {
     $(document).on('click', '.sendmsg', App.handleMessage);
     $(document).on('click', '.regUser', App.handleNickname);
   },
 
+  //converts a unix timestamps for display on messages
+  convertUnix: function(timeStamp)
+  {
+    const weekday = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+    const monthName = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    var date = new Date(timeStamp);
+    var month = date.getMonth();
+    var dayOfWeek = date.getUTCDay();
+    var day = date.getDate();
+    var hours = date.getHours();
+    var minutes = date.getMinutes();
+    if(minutes < 10)
+    {
+      minutes = "0"+minutes;
+    }
+    var seconds = date.getSeconds();
+    if(seconds < 10)
+    {
+      seconds = "0"+seconds;
+    }
+    var convertedTime = weekday[dayOfWeek]+', '+monthName[month]+' '+day+', '+hours+':'+minutes+':'+seconds;
+    return convertedTime;
+  },
+
+  addSenderMessage: function(timeStamp, message)
+  {
+    var tmpString = "";
+    tmpString = "<div class=\"message-container\">";
+    tmpString += "<div class=\"blockchat-message\">";
+    tmpString += "<img class=\"pfp-sender\" src=\"images/defaultpfp.png\" />";
+    tmpString += message;
+    tmpString += "</div>";
+    tmpString += "<div class=\"blockchat-time-container sent-time-sender\">";
+    tmpString += timeStamp;
+    tmpString += "</div></div>";
+    var msgHandle = document.getElementById('blockchat-container');
+    msgHandle.innerHTML += tmpString;
+  },
+
+  addReceiverMessage: function(timeStamp, message)
+  {
+    var tmpString = "";
+    tmpString = "<div class=\"message-container\">";
+    tmpString += "<div class=\"blockchat-message\">";
+    tmpString += "<img class=\"pfp-receiver\" src=\"images/defaultpfp.png\" />";
+    tmpString += message;
+    tmpString += "</div>";
+    tmpString += "<div class=\"blockchat-time-container sent-time-sender\">";
+    tmpString += timeStamp;
+    tmpString += "</div></div>";
+    var msgHandle = document.getElementById('blockchat-container');
+    msgHandle.innerHTML += tmpString;
+  },
+
+
+
+  // this should capture emitted events for display
   checkMessages: async function() {
     var messageInstance;
     var account;
@@ -82,6 +140,7 @@ App = {
     });
   },
 
+  // checks if a user exists, and if they don't then they are prompted with a screen to register
   checkUser: async function() {
     var blockchatInstance;
     var account;
@@ -97,7 +156,7 @@ App = {
       }).then(function(addressToName) {
           $('#welcome-back').html("Welcome back, "+addressToName);
       }).catch(function(err) {
-        //console.log(err.message);
+        //dispaly modal for users if not registered
           $('#content-container').addClass('block-content');
           var tmpString = "";
           tmpString += "<div class=\"modal-content\">";
@@ -126,126 +185,9 @@ App = {
     });
   },
 
-  returnMessageArray: async function(instance, receiver) {
-    //var returnMsgArray = await instance.getMessagesbySender.call();
-    console.log(returnMsgArray);
-  },
 
-  returnMessage: async function(instance, index) {
-    var returnMessage = await instance.getMessageByIndex.call(index);
-    console.log(returnMessage);
-  },
-
-  handleCreateUser: async function(instance, account, nickname) {
-    var Blockname = await instance._createUser(nickname, {from: account, gas: 1000000, gasPrice: web3.toWei(1, 'gwei')});
-    console.log(Blockname);
-  },
-
-  getMessages: async function(instance, receiver, account) {
-    const messages = await instance.getMessageArray.call(receiver, {from: account});
-    //console.log(messages);
-    var indexArray = [];
-    var tStampArray = [];
-    var senderAddr = [];
-    var i = 0;
-    messages.forEach(function(data1,data2,data3){
-      switch(i) {
-        case 0:
-          senderAddr = data3[0];
-          break;
-        case 1:
-          tStampArray = data3[1];
-          break;
-        case 2:
-          indexArray = data3[2];
-          break;
-        default:
-      }
-      i++;
-    });
-    for(let x = 0; x < indexArray.length; x++)
-    {
-      App.returnMessage(instance,indexArray[x].c[0]);
-    }
-    /*
-    indexArray.forEach(function(data) {
-      console.log(data[0]);
-      App.returnMessage(instance,data[0]);
-    });
-    */
-  },
-
-  handleCreateMessage: async function(instance, receiver, message, account) {
-    const tempTime = Date.now();
-    console.log("Sender is  "+account+" the receiver is  "+receiver+" and the message is \n "+message);
-    var newMessage = await instance.createMessage(receiver, message, tempTime, {from: account, gas: 1000000, gasPrice: web3.toWei(1, 'gwei')});
-  },
-
-  handleTimeStamp: function(event) {
-   event.preventDefault();
-    // grab the message from the text area to send
-    var messageInstance;
-    var account;
-    // make sure that you are logged in before you try to send
-    web3.eth.getAccounts(function(error, accounts) {
-      if (error) {
-        console.log(error);
-      }
-      // this is the wallet address
-      account = accounts[0];
-      //testing if its sending all the correct information
-      App.contracts.BlockchatMessenger.deployed().then(function(instance) {
-        messageInstance = instance;
-
-        // Execute blockchat transaction example as transaction
-        //
-        //return App.returnMessage(blockchatInstance, account);
-        return App.getMsgTimestamp(messageInstance);
-      }).then(function(result) {
-        //console.log(result);
-        //return App.returnMessage(blockchatInstance, account);
-      }).catch(function(err) {
-        console.log(err.message);
-      });
-    });
-  },
-
-  handleNickname: function(event) {
-    event.preventDefault();
-    // grab the message from the text area to send
-    var userName = $('#userName').val();
-    var blockchatInstance;
-    var account;
-    // make sure that you are logged in before you try to send
-    web3.eth.getAccounts(function(error, accounts) {
-      if (error) {
-        console.log(error);
-      }
-      // this is the wallet address
-      account = accounts[0];
-      //testing if its sending all the correct information
-      App.contracts.BlockchatBlockchain.deployed().then(function(instance) {
-        blockchatInstance = instance;
-
-        // Execute blockchat transaction example as transaction
-        //
-        //return App.returnMessage(blockchatInstance, account);
-        return App.handleCreateUser(blockchatInstance, account, userName);
-      }).then(function(result) {
-        //console.log(result);
-        console.log("account successfully created");
-        $('#myModal').css("display","none");
-        $('#content-container').removeClass('block-content');
-        $('#welcome-back').html("Welcome back, "+userName);
-        //return App.returnMessage(blockchatInstance, account);
-      }).catch(function(err) {
-        console.log(err.message);
-      });
-    });
-  },
-
-  handleMessage: function(event) {
-    event.preventDefault();
+  // handles getting messages for our application
+  initMessages: async function() {
     // grab the message from the text area to send
     var messageText = $('.msg-text-area').val();
     var blockchatInstance;
@@ -262,10 +204,7 @@ App = {
       //testing if its sending all the correct information
       App.contracts.BlockchatMessenger.deployed().then(function(instance) {
         blockmessageInstance = instance;
-        //var index = 0;
         // Execute blockchat transaction example as transaction
-        //return App.returnMessage(blockmessageInstance, index);
-        //return App.handleCreateMessage(blockmessageInstance, receiverAccount, messageText, account);
         return App.getMessages(blockmessageInstance, receiverAccount, account);
       }).then(function(result) {
         //console.log(result);
@@ -274,8 +213,143 @@ App = {
       }).catch(function(err) {
         console.log(err.message);
       });
+    });
+  },
 
-      //console.log("current sender is "+account+" and the current message to send is "+messageText);
+  // returns an array of strings based on the receiver address
+  returnMessageArray: async function(instance, receiver) {
+    //var returnMsgArray = await instance.getMessagesbySender.call();
+    console.log(returnMsgArray);
+  },
+
+  // returns a message from a message index
+  returnMessage: async function(instance, index, timeStamp, senderCheck) {
+    var returnMessage = await instance.getMessageByIndex.call(index);
+    var tmpString = "";
+    //sends the message to display on the screen
+    if(senderCheck)
+    {
+      App.addSenderMessage(timeStamp,returnMessage);
+    }
+    else
+    {
+      App.addReceiverMessage(timeStamp,returnMessage);
+    }
+    //console.log(returnMessage);
+  },
+
+  //this creates a new user
+  handleCreateUser: async function(instance, account, nickname) {
+    var Blockname = await instance._createUser(nickname, {from: account, gas: 1000000, gasPrice: web3.toWei(1, 'gwei')});
+    console.log(Blockname);
+  },
+
+  // return a tuple of arrays from the blockchain with an index to the message, a timestamp and a sender address
+  getMessages: async function(instance, receiver, account) {
+    const messages = await instance.getMessageArray.call(receiver, {from: account});
+    var indexArray = [];
+    var tStampArray = [];
+    var senderAddr = [];
+    var toClient = false;
+    var i = 0;
+    messages.forEach(function(data1,data2,data3){
+      switch(i) {
+        case 0:
+          senderAddr = data3[0];
+          break;
+        case 1:
+          tStampArray = data3[1];
+          break;
+        case 2:
+          indexArray = data3[2];
+          break;
+        default:
+      }
+      i++;
+    });
+    // sends to the function to the message
+    for(let x = 0; x < indexArray.length; x++)
+    {
+      if(receiver == senderAddr[x])
+      {
+        toClient = false;
+      }
+      else
+      {
+        toClient = true;
+      }
+      //console.log(tStampArray[x].c[0]);
+      App.returnMessage(instance,indexArray[x].c[0], App.convertUnix(tStampArray[x].c[0]), toClient);
+    }
+
+  },
+
+  // creates messages to add them to the blockchain
+  handleCreateMessage: async function(instance, receiver, message, account, tempTime) {
+    console.log("Sender is  "+account+" the receiver is  "+receiver+" and the message is \n "+message);
+    var newMessage = await instance.createMessage(receiver, message, tempTime, {from: account, gas: 1000000, gasPrice: web3.toWei(1, 'gwei')});
+  },
+
+  // handles the user checks for our app
+  handleNickname: function(event) {
+    event.preventDefault();
+    // grab the message from the text area to send
+    var userName = $('#userName').val();
+    var blockchatInstance;
+    var account;
+    // make sure that you are logged in before you try to send
+    web3.eth.getAccounts(function(error, accounts) {
+      if (error) {
+        console.log(error);
+      }
+      // this is the wallet address
+      account = accounts[0];
+      //testing if its sending all the correct information
+      App.contracts.BlockchatBlockchain.deployed().then(function(instance) {
+        blockchatInstance = instance;
+        return App.handleCreateUser(blockchatInstance, account, userName);
+      }).then(function(result) {
+        //console.log(result);
+        console.log("account successfully created");
+        $('#myModal').css("display","none");
+        $('#content-container').removeClass('block-content');
+        $('#welcome-back').html("Welcome back, "+userName);
+        //return App.returnMessage(blockchatInstance, account);
+      }).catch(function(err) {
+        console.log(err.message);
+      });
+    });
+  },
+
+  // handles messages for our application
+  handleMessage: function(event) {
+    event.preventDefault();
+    // grab the message from the text area to send
+    var messageText = $('.msg-text-area').val();
+    var blockchatInstance;
+    var account;
+    var receiverAccount;
+    var tempTime;
+    // make sure that you are logged in before you try to send
+    web3.eth.getAccounts(function(error, accounts) {
+      if (error) {
+        console.log(error);
+      }
+      // this is the wallet address
+      account = accounts[0];
+      receiverAccount = "0x5516d794F2303Ad9A1B683A8ec91Ee1ebC120537";
+      //testing if its sending all the correct information
+      App.contracts.BlockchatMessenger.deployed().then(function(instance) {
+        blockmessageInstance = instance;
+        // Execute blockchat transaction example as transaction
+        tempTime = Date.now();
+        return App.handleCreateMessage(blockmessageInstance, receiverAccount, messageText, account, tempTime);
+      }).then(function(result) {
+        //console.log(result);
+        App.addSenderMessage(App.convertUnix(tempTime), messageText);
+      }).catch(function(err) {
+        console.log(err.message);
+      });
     });
   }
 

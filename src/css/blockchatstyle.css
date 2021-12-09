@@ -18,6 +18,7 @@ div.blockchat-container {
   	padding: 20px;
   	border: 3px solid #f1f1f1;
   	margin: 10px 0;
+    overflow-y: scroll;
 }
 
 .message-container {
