@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@truffle/contract": "^4.3.43",
+    "mem": "^9.0.1",
     "web3": "^1.6.1"
   },
   "devDependencies": {

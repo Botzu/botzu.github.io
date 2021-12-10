@@ -4,7 +4,7 @@ CS537 Fall 2021
 Project Blockchat-Blockchain
 */
 /*    Main screen style  */
-// blockchat message box CSS
+/* blockchat message box CSS */
 div.container {
 	height: 100vh;
 }
@@ -13,12 +13,36 @@ div.container {
 	-webkit-filter: blur(5px) grayscale(90%);
 }
 
-div.blockchat-container {
-	height: calc(100vh - 400px);
-  	padding: 20px;
-  	border: 3px solid #f1f1f1;
-  	margin: 10px 0;
+div.blockchat-wrapper {
+    display:flex; 
+    flex-direction:column-reverse;
     overflow-y: scroll;
+    height: calc(100vh - 400px);
+    border: 3px solid rgb(0, 120, 204);
+}
+
+.selected {
+    border: 3px solid !important;
+}
+
+.Search-Blocks {
+    display: inline-block;
+    width: calc(100% - 45px);
+    padding: 0.5rem 0.5rem;
+    border-radius: 5px;
+    margin-bottom: 5px;
+}
+
+.add-button:hover {
+    cursor: pointer;
+    background-color: #f1f1f1;
+    border-radius:50%;
+    box-shadow: 0 0 5px 0 #0078CC;
+}
+
+div.blockchat-container {
+    padding: 17px;
+    margin: 5px 0;
 }
 
 .message-container {
@@ -81,8 +105,13 @@ img.pfp-receiver {
   margin: 5px 0 22px 0;
   border: none;
   background: #f1f1f1;
+  font-weight: bold;
   resize: none;
   min-height: 100px;
+}
+
+.chat-container textarea::placeholder {
+    // if we wanna change this later
 }
 
 /* When the textarea gets focus, do something */

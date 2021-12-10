@@ -58,7 +58,22 @@ App = {
   bindEvents: function() {
     $(document).on('click', '.sendmsg', App.handleMessage);
     $(document).on('click', '.regUser', App.handleNickname);
+    $(document).on('click', '.list-group-item', App.selectContact);
   },
+
+  selectContact: function(event) {
+    event.preventDefault();
+    // grab the message from the text area to send
+    if ($(event.target).hasClass('selected'))
+      {
+        $(event.target).removeClass('selected');
+      }
+    else
+      {
+        $(event.target).addClass('selected');
+      }
+  },
+
 
   //converts a unix timestamps for display on messages
   convertUnix: function(timeStamp)
@@ -126,7 +141,7 @@ App = {
 
       App.contracts.BlockchatMessenger.deployed().then(function(instance) {
         messageInstance = instance;
-        receiverAccount = "0x5516d794F2303Ad9A1B683A8ec91Ee1ebC120537";
+        receiverAccount = "0x572DFd6B26dc567C87F9013C1f54DA236b117b3e";
         //check messages here
         
         console.log(results);
@@ -198,7 +213,7 @@ App = {
       }
       // this is the wallet address
       account = accounts[0];
-      receiverAccount = "0x5516d794F2303Ad9A1B683A8ec91Ee1ebC120537";
+      receiverAccount = "0x572DFd6B26dc567C87F9013C1f54DA236b117b3e";
       //testing if its sending all the correct information
       App.contracts.BlockchatMessenger.deployed().then(function(instance) {
         blockmessageInstance = instance;
@@ -229,7 +244,7 @@ App = {
       }
       // this is the wallet address
       account = accounts[0];
-      receiverAccount = "0x5516d794F2303Ad9A1B683A8ec91Ee1ebC120537";
+      receiverAccount = "0x572DFd6B26dc567C87F9013C1f54DA236b117b3e";
       //testing if its sending all the correct information
       App.contracts.BlockchatMessenger.deployed().then(function(instance) {
         blockmessageInstance = instance;
@@ -274,22 +289,24 @@ App = {
 
   returnMessageLog: async function(instance, receiver, account) {
     instance.messageCreated({
-      filter: {_from: account, _to: receiver}, 
+      filter: {_from: [receiver,account], _to: [receiver,account]}, 
       fromBlock: 0
     }, function(error, event){ 
       if(event.returnValues[0] == account)
-      {
+      { 
           App.addSenderMessage(App.convertUnix(event.returnValues[2]),event.returnValues[3]);
       }
-      else if(event.returnValues[0] == account)
+      else if(event.returnValues[0] == receiver)
       {
           App.addReceiverMessage(App.convertUnix(event.returnValues[2]),event.returnValues[3]);
       }
       else
       {
+        console.log("logging discard");
         //discard its not for us
       }
     });
+
   },
 
   // return a tuple of arrays from the blockchain with an index to the message, a timestamp and a sender address
@@ -385,7 +402,7 @@ App = {
       }
       // this is the wallet address
       account = accounts[0];
-      receiverAccount = "0x5516d794F2303Ad9A1B683A8ec91Ee1ebC120537";
+      receiverAccount = "0x572DFd6B26dc567C87F9013C1f54DA236b117b3e";
       //testing if its sending all the correct information
       App.contracts.BlockchatMessenger.deployed().then(function(instance) {
         blockmessageInstance = instance;
