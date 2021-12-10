@@ -28,7 +28,6 @@ App = {
       App.web3Provider = new Web3.providers.HttpProvider('http://localhost:7545');
     }
     web3 = new Web3(App.web3Provider);
-
     return App.initContract();
   },
 
@@ -50,7 +49,8 @@ App = {
 
       // set the provider for contract
       App.contracts.BlockchatMessenger.setProvider(App.web3Provider);
-      return App.initMessages();
+      App.initMessages();
+      return App.getMessageFromLogs();
     });
     return App.bindEvents();
   },
@@ -113,8 +113,6 @@ App = {
     var msgHandle = document.getElementById('blockchat-container');
     msgHandle.innerHTML += tmpString;
   },
-
-
 
   // this should capture emitted events for display
   checkMessages: async function() {
@@ -216,6 +214,36 @@ App = {
     });
   },
 
+      // handles messages for our application
+  getMessageFromLogs: async function() {
+    event.preventDefault();
+    // grab the message from the text area to send
+    var blockchatInstance;
+    var account;
+    var receiverAccount;
+    var tempTime;
+    // make sure that you are logged in before you try to send
+    web3.eth.getAccounts(function(error, accounts) {
+      if (error) {
+        console.log(error);
+      }
+      // this is the wallet address
+      account = accounts[0];
+      receiverAccount = "0x5516d794F2303Ad9A1B683A8ec91Ee1ebC120537";
+      //testing if its sending all the correct information
+      App.contracts.BlockchatMessenger.deployed().then(function(instance) {
+        blockmessageInstance = instance;
+        // Execute blockchat transaction example as transaction
+        return App.returnMessageLog(blockmessageInstance, receiverAccount, account);
+      }).then(function(result) {
+        //console.log(result);
+       // App.addSenderMessage(App.convertUnix(tempTime), messageText);
+      }).catch(function(err) {
+        console.log(err.message);
+      });
+    });
+  },
+
   // returns an array of strings based on the receiver address
   returnMessageArray: async function(instance, receiver) {
     //var returnMsgArray = await instance.getMessagesbySender.call();
@@ -244,8 +272,26 @@ App = {
     console.log(Blockname);
   },
 
+  returnMessageLog: async function(instance, receiver, account) {
+    instance.messageCreated({
+      filter: {_from: account, _to: receiver}, 
+      fromBlock: 0
+    }, function(error, event){ 
+      console.log(event); 
+    });
+  },
+
   // return a tuple of arrays from the blockchain with an index to the message, a timestamp and a sender address
   getMessages: async function(instance, receiver, account) {
+    /*
+    instance.messageCreated({
+      filter: {_from: account, _to: receiver}, 
+      fromBlock: 0
+    }, function(error, event){ console.log(event); })
+    .on('data', function(event){
+      console.log(event); // same results as the optional callback above
+    });
+    */
     const messages = await instance.getMessageArray.call(receiver, {from: account});
     var indexArray = [];
     var tStampArray = [];

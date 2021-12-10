@@ -1,0 +1,179 @@
+{
+  "contractName": "BlockchatContractHelper",
+  "abi": [],
+  "metadata": "{\"compiler\":{\"version\":\"0.8.9+commit.e5eed63a\"},\"language\":\"Solidity\",\"output\":{\"abi\":[],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/BlockchatContractHelper.sol\":\"BlockchatContractHelper\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/BlockchatBlockchain.sol\":{\"keccak256\":\"0x22a105094524dc9d450952c7e8e05ef5727d2f2a2c9570b1066bc6fe1f97f899\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://8cd9988e46f0db126c2d343f59c531f9a7a8be9935dd35038273f29f36502b12\",\"dweb:/ipfs/Qma2xPf7aGftiRhEMChgz1zkL9JEMmxFpyhUxMZL5cvueb\"]},\"project:/contracts/BlockchatContractHelper.sol\":{\"keccak256\":\"0x7f88eb4640c2dfdab97aacc03d8879f91bc31490ef90bf566793dae569961120\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://b66a24daa90e8f1cd305dd891c4ba5dc6ce86896327f0b28da1cb7fb728ebb9b\",\"dweb:/ipfs/QmTxoPkozUyC8ec4DKQFvTpc6dUrWNMKCTb9YDmX5pPqiS\"]},\"project:/contracts/BlockchatMessenger.sol\":{\"keccak256\":\"0x772b01e47048f13ee0842c0ec4df25776aac918d763d5ad4690b5b20bdd5ec86\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://0c84c2f5f5c66656d31c38dbed610127b74cb1fa7140f9b016fd683cae1be9ca\",\"dweb:/ipfs/QmSZ1bUNrFbujDmGQTefyiHF9CmDiVjKGGqkpPwsF6cGFA\"]}},\"version\":1}",
+  "bytecode": "0x6080604052348015600f57600080fd5b50603f80601d6000396000f3fe6080604052600080fdfea264697066735822122042d39acd4b4a134d9666f277b5be1278e515e827d9aa03d16f429e08ab2b204f64736f6c63430008090033",
+  "deployedBytecode": "0x6080604052600080fdfea264697066735822122042d39acd4b4a134d9666f277b5be1278e515e827d9aa03d16f429e08ab2b204f64736f6c63430008090033",
+  "immutableReferences": {},
+  "generatedSources": [],
+  "deployedGeneratedSources": [],
+  "sourceMap": "203:39:1:-:0;;;;;;;;;;;;;;;;;;;",
+  "deployedSourceMap": "203:39:1:-:0;;;;;",
+  "source": "// SPDX-License-Identifier: MIT\r\n// Daniel Timko, Harry Hokbyan, Mikhail Sharko, Atika Singh\r\npragma solidity >=0.4.22 <0.9.0;\r\npragma experimental ABIEncoderV2;\r\n\r\nimport \"./BlockchatMessenger.sol\";\r\n\r\ncontract BlockchatContractHelper {\r\n\r\n}",
+  "sourcePath": "C:\\Users\\botzu\\blockchat-blockchain\\contracts\\BlockchatContractHelper.sol",
+  "ast": {
+    "absolutePath": "project:/contracts/BlockchatContractHelper.sol",
+    "exportedSymbols": {
+      "BlockchatBlockchain": [
+        97
+      ],
+      "BlockchatContractHelper": [
+        102
+      ],
+      "BlockchatMessenger": [
+        496
+      ]
+    },
+    "id": 103,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 99,
+        "literals": [
+          "solidity",
+          ">=",
+          "0.4",
+          ".22",
+          "<",
+          "0.9",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "94:32:1"
+      },
+      {
+        "id": 100,
+        "literals": [
+          "experimental",
+          "ABIEncoderV2"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "128:33:1"
+      },
+      {
+        "absolutePath": "project:/contracts/BlockchatMessenger.sol",
+        "file": "./BlockchatMessenger.sol",
+        "id": 101,
+        "nameLocation": "-1:-1:-1",
+        "nodeType": "ImportDirective",
+        "scope": 103,
+        "sourceUnit": 497,
+        "src": "165:34:1",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "BlockchatContractHelper",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 102,
+        "linearizedBaseContracts": [
+          102
+        ],
+        "name": "BlockchatContractHelper",
+        "nameLocation": "212:23:1",
+        "nodeType": "ContractDefinition",
+        "nodes": [],
+        "scope": 103,
+        "src": "203:39:1",
+        "usedErrors": []
+      }
+    ],
+    "src": "94:148:1"
+  },
+  "legacyAST": {
+    "absolutePath": "project:/contracts/BlockchatContractHelper.sol",
+    "exportedSymbols": {
+      "BlockchatBlockchain": [
+        97
+      ],
+      "BlockchatContractHelper": [
+        102
+      ],
+      "BlockchatMessenger": [
+        496
+      ]
+    },
+    "id": 103,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 99,
+        "literals": [
+          "solidity",
+          ">=",
+          "0.4",
+          ".22",
+          "<",
+          "0.9",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "94:32:1"
+      },
+      {
+        "id": 100,
+        "literals": [
+          "experimental",
+          "ABIEncoderV2"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "128:33:1"
+      },
+      {
+        "absolutePath": "project:/contracts/BlockchatMessenger.sol",
+        "file": "./BlockchatMessenger.sol",
+        "id": 101,
+        "nameLocation": "-1:-1:-1",
+        "nodeType": "ImportDirective",
+        "scope": 103,
+        "sourceUnit": 497,
+        "src": "165:34:1",
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "BlockchatContractHelper",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "id": 102,
+        "linearizedBaseContracts": [
+          102
+        ],
+        "name": "BlockchatContractHelper",
+        "nameLocation": "212:23:1",
+        "nodeType": "ContractDefinition",
+        "nodes": [],
+        "scope": 103,
+        "src": "203:39:1",
+        "usedErrors": []
+      }
+    ],
+    "src": "94:148:1"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.8.9+commit.e5eed63a.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.4.3",
+  "updatedAt": "2021-12-09T21:08:46.523Z",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  }
+}
