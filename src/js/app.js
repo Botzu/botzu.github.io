@@ -13,7 +13,7 @@ App = {
       App.web3Provider = window.ethereum;
       try {
         // Request account access
-        await window.ethereum.enable();
+        await window.eth_requestAccounts;
       } catch (error) {
         // User denied account access...
         console.error("User denied account access")
@@ -49,7 +49,7 @@ App = {
 
       // set the provider for contract
       App.contracts.BlockchatMessenger.setProvider(App.web3Provider);
-      App.initMessages();
+      //App.initMessages();
       return App.getMessageFromLogs();
     });
     return App.bindEvents();
@@ -65,7 +65,7 @@ App = {
   {
     const weekday = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
     const monthName = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-    var date = new Date(timeStamp);
+    var date = new Date(timeStamp * 1);
     var month = date.getMonth();
     var dayOfWeek = date.getUTCDay();
     var day = date.getDate();
@@ -268,7 +268,7 @@ App = {
 
   //this creates a new user
   handleCreateUser: async function(instance, account, nickname) {
-    var Blockname = await instance._createUser(nickname, {from: account, gas: 1000000, gasPrice: web3.toWei(1, 'gwei')});
+    var Blockname = await instance._createUser(nickname, {from: account, gas: 1000000});
     console.log(Blockname);
   },
 
@@ -277,27 +277,30 @@ App = {
       filter: {_from: account, _to: receiver}, 
       fromBlock: 0
     }, function(error, event){ 
-      console.log(event); 
+      if(event.returnValues[0] == account)
+      {
+          App.addSenderMessage(App.convertUnix(event.returnValues[2]),event.returnValues[3]);
+      }
+      else if(event.returnValues[0] == account)
+      {
+          App.addReceiverMessage(App.convertUnix(event.returnValues[2]),event.returnValues[3]);
+      }
+      else
+      {
+        //discard its not for us
+      }
     });
   },
 
   // return a tuple of arrays from the blockchain with an index to the message, a timestamp and a sender address
   getMessages: async function(instance, receiver, account) {
-    /*
-    instance.messageCreated({
-      filter: {_from: account, _to: receiver}, 
-      fromBlock: 0
-    }, function(error, event){ console.log(event); })
-    .on('data', function(event){
-      console.log(event); // same results as the optional callback above
-    });
-    */
     const messages = await instance.getMessageArray.call(receiver, {from: account});
     var indexArray = [];
     var tStampArray = [];
     var senderAddr = [];
     var toClient = false;
     var i = 0;
+    
     messages.forEach(function(data1,data2,data3){
       switch(i) {
         case 0:
@@ -327,13 +330,12 @@ App = {
       //console.log(tStampArray[x].c[0]);
       App.returnMessage(instance,indexArray[x].c[0], App.convertUnix(tStampArray[x].c[0]), toClient);
     }
-
+    
   },
 
   // creates messages to add them to the blockchain
   handleCreateMessage: async function(instance, receiver, message, account, tempTime) {
-    console.log("Sender is  "+account+" the receiver is  "+receiver+" and the message is \n "+message);
-    var newMessage = await instance.createMessage(receiver, message, tempTime, {from: account, gas: 1000000, gasPrice: web3.toWei(1, 'gwei')});
+    var newMessage = await instance.createMessage(receiver, message, tempTime, {from: account, gas: 1000000});
   },
 
   // handles the user checks for our app
@@ -391,8 +393,7 @@ App = {
         tempTime = Date.now();
         return App.handleCreateMessage(blockmessageInstance, receiverAccount, messageText, account, tempTime);
       }).then(function(result) {
-        //console.log(result);
-        App.addSenderMessage(App.convertUnix(tempTime), messageText);
+        console.log("created new message successfully");
       }).catch(function(err) {
         console.log(err.message);
       });
