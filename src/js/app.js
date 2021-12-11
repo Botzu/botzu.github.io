@@ -247,7 +247,7 @@ App = {
       }
       // this is the wallet address
       account = accounts[0];
-      receiverAccount = "0x35792Ae6A80EB9F641321175b3Ee3fcc8a3b3C30";
+      receiverAccount = "0x6d666204EC41D2951921421eD5C4B605d1F4c3b3";
       //testing if its sending all the correct information
       App.contracts.BlockchatMessenger.deployed().then(function(instance) {
         blockmessageInstance = instance;
@@ -405,7 +405,7 @@ App = {
       }
       // this is the wallet address
       account = accounts[0];
-      receiverAccount = "0x3b4e24cf159BbFCa9739fAeEC5400f1E5a1DC026";
+      receiverAccount = "0x6d666204EC41D2951921421eD5C4B605d1F4c3b3";
       //mike 0x3b4e24cf159BbFCa9739fAeEC5400f1E5a1DC026
       //testing if its sending all the correct information
       App.contracts.BlockchatMessenger.deployed().then(function(instance) {
