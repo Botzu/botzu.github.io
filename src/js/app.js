@@ -103,7 +103,7 @@ App = {
   {
     var tmpString = "";
     tmpString = "<div class=\"message-container\">";
-    tmpString += "<div class=\"blockchat-message\">";
+    tmpString += "<div class=\"blockchat-message-sender\">";
     tmpString += "<img class=\"pfp-sender\" src=\"images/defaultpfp.png\" />";
     tmpString += message;
     tmpString += "</div>";
@@ -118,7 +118,7 @@ App = {
   {
     var tmpString = "";
     tmpString = "<div class=\"message-container\">";
-    tmpString += "<div class=\"blockchat-message\">";
+    tmpString += "<div class=\"blockchat-message-receiver\">";
     tmpString += "<img class=\"pfp-receiver\" src=\"images/defaultpfp.png\" />";
     tmpString += message;
     tmpString += "</div>";
