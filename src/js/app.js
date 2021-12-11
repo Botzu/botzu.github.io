@@ -80,28 +80,33 @@ App = {
         blockchatInstance = instance;
          return blockchatInstance._returnAddressByName.call(cName, {from: account});
       }).then(function(result) {
-        if(result != "0x0000000000000000000000000000000000000000")
-        { 
-            var contactHandle = $('#contact-list-group');
-            var duplicate = false;
-            contactHandle.children().each(function () {
-              if ($(this).outerHTML() == cName)
-              {
-                duplicate = true;
-              }
-            });
-            var tmpString = "<li id = \""+result+"\" class=\"list-group-item\">";
-            tmpString += cName
-            tmpString += "</li>";
-            if(!duplicate)
-            {
-              contactHandle.append(tmpString);
-            }
-        }  
+        App.handleContact(result,cName);
       }).catch(function(err) {
         console.log(err.message);
       });
     });
+  },
+
+  handleContact: function(result, cName)
+  {
+    if(result != "0x0000000000000000000000000000000000000000")
+    { 
+        var contactHandle = $('#contact-list-group');
+        var duplicate = false;
+        contactHandle.children().each(function () {
+          if ($(this).outerHTML() == cName)
+          {
+            duplicate = true;
+          }
+        });
+        var tmpString = "<li id = \""+result+"\" class=\"list-group-item\">";
+        tmpString += cName
+        tmpString += "</li>";
+        if(!duplicate)
+        {
+          contactHandle.append(tmpString);
+        }
+    }      
   },
 
   selectContact: function(event) {
@@ -118,8 +123,19 @@ App = {
     return App.checkMessages($(event.target).attr('id'));
   },
 
-
-
+  getSelectedContact: function()
+  {
+    var selected = "";
+    var contactHandle = $('#contact-list-group');
+    contactHandle.children().each(function () {
+      if ($(this).hasClass('selected'))
+      {
+       selected = $(this).attr('id');
+      }
+    });
+    
+    return selected;
+  },
   //converts a unix timestamps for display on messages
   convertUnix: function(timeStamp)
   {
@@ -327,7 +343,7 @@ App = {
 
         App.addSenderMessage(App.convertUnix(event.returnValues[2]),event.returnValues[3]);
       }
-      else if(event.returnValues[0] == receiver)
+      else if(event.returnValues[1] == account)
       {
           App.addReceiverMessage(App.convertUnix(event.returnValues[2]),event.returnValues[3]);
       }
@@ -391,14 +407,15 @@ App = {
       }
       // this is the wallet address
       account = accounts[0];
-      receiverAccount = "0x532D1edeB0102FD48E5422fa2Cb8Dee5886F6CC2";
+      receiverAccount = App.getSelectedContact();
+      console.log(receiverAccount);
       //mike 0x3b4e24cf159BbFCa9739fAeEC5400f1E5a1DC026
       //testing if its sending all the correct information
       App.contracts.BlockchatMessenger.deployed().then(function(instance) {
         blockmessageInstance = instance;
         // Execute blockchat transaction example as transaction
         tempTime = Date.now();
-        return App.handleCreateMessage(blockmessageInstance, receiverAccount, messageText, account, tempTime);
+        //return App.handleCreateMessage(blockmessageInstance, receiverAccount, messageText, account, tempTime);
       }).then(function(result) {
         console.log("created new message successfully");
       }).catch(function(err) {
