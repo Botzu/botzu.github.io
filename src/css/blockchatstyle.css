@@ -98,7 +98,7 @@ img.pfp-sender {
 	float: left;
 	height: 50px;
 	width: 50px;
-    margin: 5px 0px 0 -70px;
+    margin: -6px 0px 0 -70px;
 }
 
 
@@ -111,7 +111,7 @@ img.pfp-receiver {
 	float: right;
 	height: 50px;
 	width: 50px;
-    margin: 5px -70px 0px 0px;
+    margin: -6px -70px 0px 0px;
      
      
 }
