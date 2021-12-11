@@ -4,15 +4,16 @@ pragma solidity >=0.4.22 <0.9.0;
 
 contract BlockchatBlockchain {
 	
-	event NewUser(address userAddress, string name);
+	event NewUser(address indexed userAddress, string name);
 
 	struct User {
+		address userAddress;
 		string name;
 	}
 
 	User[] public blockchatters;
 	mapping (address => string) public addressToName;
-	mapping (uint => address) public userToAddress;
+	mapping (string => address) public userToAddress;
 	mapping (address => uint) usersCount;
 
 	function _returnUser() public view returns(string memory) {
@@ -20,13 +21,33 @@ contract BlockchatBlockchain {
 		return addressToName[msg.sender];
 	}
 
+	function _getUserByAddress(address _address) public view returns(string memory) {
+		require(usersCount[_address] > 0);
+		return addressToName[_address];
+	}
+
+	function _returnAddressByName(string memory _name) public view returns(address) {
+		return userToAddress[_name];
+	}
+
+	function _requireUnique(string memory _name) public view returns(bool check)
+	{
+		for (uint8 i = 0; i < blockchatters.length; i++) {
+            if(keccak256(abi.encodePacked(blockchatters[i].name)) == keccak256(abi.encodePacked(_name)))
+            {
+            	return false;
+            }
+        }
+        return true;
+	}
+
 	function _createUser(string memory _name) public {
 		// check if user exists
+		require(_requireUnique(_name) == true);
 		require(usersCount[msg.sender] == 0);
-		blockchatters.push(User(_name));
-		uint id = blockchatters.length - 1;
-		userToAddress[id] = msg.sender;
+		blockchatters.push(User(msg.sender, _name));
 		usersCount[msg.sender]++;
+		userToAddress[_name] = msg.sender;
 		addressToName[msg.sender] = _name;
 		emit NewUser(msg.sender, _name);
 	}

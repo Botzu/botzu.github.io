@@ -1,6 +1,7 @@
 App = {
   web3Provider: null,
   contracts: {},
+  contacts: [],
   // pre-defined function from truffle
   init: async function() {
     // load templates here and define variables for rows
@@ -59,6 +60,48 @@ App = {
     $(document).on('click', '.sendmsg', App.handleMessage);
     $(document).on('click', '.regUser', App.handleNickname);
     $(document).on('click', '.list-group-item', App.selectContact);
+    $(document).on('click', '.add-button', App.addContact);
+  },
+
+  addContact: function(event) {
+    event.preventDefault();
+    var cName = $('#Search').val();
+    var blockchatInstance;
+    var account;
+    // make sure that you are logged in before you try to send
+    web3.eth.getAccounts(function(error, accounts) {
+      if (error) {
+        console.log(error);
+      }
+      // this is the wallet address
+      account = accounts[0];
+      //testing if its sending all the correct information
+      App.contracts.BlockchatBlockchain.deployed().then(function(instance) {
+        blockchatInstance = instance;
+         return blockchatInstance._returnAddressByName.call(cName, {from: account});
+      }).then(function(result) {
+        if(result != "0x0000000000000000000000000000000000000000")
+        { 
+            var contactHandle = $('#contact-list-group');
+            var duplicate = false;
+            contactHandle.children().each(function () {
+              if ($(this).outerHTML() == cName)
+              {
+                duplicate = true;
+              }
+            });
+            var tmpString = "<li id = \""+result+"\" class=\"list-group-item\">";
+            tmpString += cName
+            tmpString += "</li>";
+            if(!duplicate)
+            {
+              contactHandle.append(tmpString);
+            }
+        }  
+      }).catch(function(err) {
+        console.log(err.message);
+      });
+    });
   },
 
   selectContact: function(event) {
@@ -71,8 +114,8 @@ App = {
         $(this).removeClass('selected');
       }
     });
-    
     $(event.target).addClass('selected');
+    return App.checkMessages($(event.target).attr('id'));
   },
 
 
@@ -132,7 +175,7 @@ App = {
   },
 
   // this should capture emitted events for display
-  checkMessages: async function() {
+  checkMessages: async function(id) {
     var messageInstance;
     var account;
     web3.eth.getAccounts(function(error, accounts) {
@@ -143,10 +186,11 @@ App = {
 
       App.contracts.BlockchatMessenger.deployed().then(function(instance) {
         messageInstance = instance;
-        receiverAccount = "0x572DFd6B26dc567C87F9013C1f54DA236b117b3e";
+        var msgHandle = document.getElementById('blockchat-container');
+        msgHandle.innerHTML = "";
+        receiverAccount = id;
         //check messages here
-        
-        console.log(results);
+        App.returnMessageLog(blockmessageInstance, receiverAccount, account);
       }).then(function(result) {
 
       }).catch(function(err) {
@@ -200,38 +244,6 @@ App = {
     });
   },
 
-
-  // handles getting messages for our application
-  initMessages: async function() {
-    // grab the message from the text area to send
-    var messageText = $('.msg-text-area').val();
-    var blockchatInstance;
-    var account;
-    var receiverAccount;
-    // make sure that you are logged in before you try to send
-    web3.eth.getAccounts(function(error, accounts) {
-      if (error) {
-        console.log(error);
-      }
-      // this is the wallet address
-      account = accounts[0];
-      receiverAccount = "0x572DFd6B26dc567C87F9013C1f54DA236b117b3e";
-      //mike  0x572DFd6B26dc567C87F9013C1f54DA236b117b3e
-      //testing if its sending all the correct information
-      App.contracts.BlockchatMessenger.deployed().then(function(instance) {
-        blockmessageInstance = instance;
-        // Execute blockchat transaction example as transaction
-        return App.getMessages(blockmessageInstance, receiverAccount, account);
-      }).then(function(result) {
-        //console.log(result);
-        console.log("Message successfully received");
-        //return App.returnMessage(blockchatInstance, account);
-      }).catch(function(err) {
-        console.log(err.message);
-      });
-    });
-  },
-
       // handles messages for our application
   getMessageFromLogs: async function() {
     event.preventDefault();
@@ -247,7 +259,8 @@ App = {
       }
       // this is the wallet address
       account = accounts[0];
-      receiverAccount = "0x6d666204EC41D2951921421eD5C4B605d1F4c3b3";
+      //defaul receiver account
+      receiverAccount = "0x532D1edeB0102FD48E5422fa2Cb8Dee5886F6CC2";
       //testing if its sending all the correct information
       App.contracts.BlockchatMessenger.deployed().then(function(instance) {
         blockmessageInstance = instance;
@@ -292,12 +305,27 @@ App = {
 
   returnMessageLog: async function(instance, receiver, account) {
     instance.messageCreated({
-      filter: {_from: [receiver,account], _to: [receiver,account]}, 
-      fromBlock: 0
+      //filter: {_from: [receiver,account], _to: [receiver,account]}, 
+      fromBlock: 0,
+      topics: account
     }, function(error, event){ 
+
       if(event.returnValues[0] == account)
       { 
-          App.addSenderMessage(App.convertUnix(event.returnValues[2]),event.returnValues[3]);
+        var contactCheck = false;
+        for (contact of App.contacts) {
+           if(contact == event.returnValues[1])
+           {
+              contactCheck = true;
+           }
+        }
+        if(!contactCheck)
+        {
+          App.contacts.push(event.returnValues[1]);
+
+        }
+
+        App.addSenderMessage(App.convertUnix(event.returnValues[2]),event.returnValues[3]);
       }
       else if(event.returnValues[0] == receiver)
       {
@@ -305,52 +333,10 @@ App = {
       }
       else
       {
-        console.log("logging discard");
-        //discard its not for us
+        //log them in our side bar 
       }
     });
 
-  },
-
-  // return a tuple of arrays from the blockchain with an index to the message, a timestamp and a sender address
-  getMessages: async function(instance, receiver, account) {
-    const messages = await instance.getMessageArray.call(receiver, {from: account});
-    var indexArray = [];
-    var tStampArray = [];
-    var senderAddr = [];
-    var toClient = false;
-    var i = 0;
-    
-    messages.forEach(function(data1,data2,data3){
-      switch(i) {
-        case 0:
-          senderAddr = data3[0];
-          break;
-        case 1:
-          tStampArray = data3[1];
-          break;
-        case 2:
-          indexArray = data3[2];
-          break;
-        default:
-      }
-      i++;
-    });
-    // sends to the function to the message
-    for(let x = 0; x < indexArray.length; x++)
-    {
-      if(receiver == senderAddr[x])
-      {
-        toClient = false;
-      }
-      else
-      {
-        toClient = true;
-      }
-      //console.log(tStampArray[x].c[0]);
-      App.returnMessage(instance,indexArray[x].c[0], App.convertUnix(tStampArray[x].c[0]), toClient);
-    }
-    
   },
 
   // creates messages to add them to the blockchain
@@ -405,7 +391,7 @@ App = {
       }
       // this is the wallet address
       account = accounts[0];
-      receiverAccount = "0x6d666204EC41D2951921421eD5C4B605d1F4c3b3";
+      receiverAccount = "0x532D1edeB0102FD48E5422fa2Cb8Dee5886F6CC2";
       //mike 0x3b4e24cf159BbFCa9739fAeEC5400f1E5a1DC026
       //testing if its sending all the correct information
       App.contracts.BlockchatMessenger.deployed().then(function(instance) {

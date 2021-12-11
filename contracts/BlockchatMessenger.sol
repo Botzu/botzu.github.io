@@ -5,7 +5,7 @@ pragma experimental ABIEncoderV2;
 
 import "./BlockchatBlockchain.sol";
 
-contract BlockchatMessenger {
+contract BlockchatMessenger is BlockchatBlockchain {
 
 	event messageCreated(address indexed _from, address indexed _to, uint _timeStamp, string _message);
 
@@ -18,7 +18,6 @@ contract BlockchatMessenger {
 	}
 
 	Message[] public blockmessages;
-	address[] receiverMessageArray;
 
 	// create a messsage here and call function to grab timestamp for display later
 	function createMessage(address _receiveraddr, string memory _message, uint256 timeNow) public {
@@ -27,6 +26,7 @@ contract BlockchatMessenger {
 		blockmessages.push(Message(id, _message, msg.sender, _receiveraddr, timeNow));
 		emit messageCreated(msg.sender, _receiveraddr, timeNow, _message);
 	}
+
 	// call this to get the full array of messages
 	function getMessageArray(address _receiveraddr) public view returns(address[] memory, uint[] memory, uint8[] memory) {
         uint256 messageCount;
