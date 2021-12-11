@@ -64,15 +64,17 @@ App = {
   selectContact: function(event) {
     event.preventDefault();
     // grab the message from the text area to send
-    if ($(event.target).hasClass('selected'))
+    var eventParent = $(event.target).parent();
+    eventParent.children().each(function () {
+      if ($(this).hasClass('selected'))
       {
-        $(event.target).removeClass('selected');
+        $(this).removeClass('selected');
       }
-    else
-      {
-        $(event.target).addClass('selected');
-      }
+    });
+    
+    $(event.target).addClass('selected');
   },
+
 
 
   //converts a unix timestamps for display on messages
