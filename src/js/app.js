@@ -63,9 +63,7 @@ App = {
 
   selectContact: function(event) {
     event.preventDefault();
-
-
-    // adds a selected class so I know which person you are chatting with
+    // grab the message from the text area to send
     if ($(event.target).hasClass('selected'))
       {
         $(event.target).removeClass('selected');
@@ -100,7 +98,7 @@ App = {
     var convertedTime = weekday[dayOfWeek]+', '+monthName[month]+' '+day+', '+hours+':'+minutes+':'+seconds;
     return convertedTime;
   },
-  // this could be updated later to make a custom pfp
+
   addSenderMessage: function(timeStamp, message)
   {
     var tmpString = "";
@@ -116,7 +114,6 @@ App = {
     msgHandle.innerHTML += tmpString;
   },
 
-  // this could be updated later to make custom pfp
   addReceiverMessage: function(timeStamp, message)
   {
     var tmpString = "";
@@ -247,7 +244,7 @@ App = {
       }
       // this is the wallet address
       account = accounts[0];
-      receiverAccount = "0x33b3844e25a04386247DddF7A75E676B34c65865";
+      receiverAccount = "0x572DFd6B26dc567C87F9013C1f54DA236b117b3e";
       //testing if its sending all the correct information
       App.contracts.BlockchatMessenger.deployed().then(function(instance) {
         blockmessageInstance = instance;
@@ -297,7 +294,6 @@ App = {
     }, function(error, event){ 
       if(event.returnValues[0] == account)
       { 
-        console.log(event);
           App.addSenderMessage(App.convertUnix(event.returnValues[2]),event.returnValues[3]);
       }
       else if(event.returnValues[0] == receiver)
@@ -406,7 +402,7 @@ App = {
       }
       // this is the wallet address
       account = accounts[0];
-      receiverAccount = "0x33b3844e25a04386247DddF7A75E676B34c65865";
+      receiverAccount = "0x572DFd6B26dc567C87F9013C1f54DA236b117b3e";
       //testing if its sending all the correct information
       App.contracts.BlockchatMessenger.deployed().then(function(instance) {
         blockmessageInstance = instance;

@@ -4,7 +4,7 @@ pragma solidity >=0.4.22 <0.9.0;
 
 contract BlockchatBlockchain {
 	
-	event NewUser(uint userId, string name);
+	event NewUser(address userAddress, string name);
 
 	struct User {
 		string name;
@@ -28,6 +28,6 @@ contract BlockchatBlockchain {
 		userToAddress[id] = msg.sender;
 		usersCount[msg.sender]++;
 		addressToName[msg.sender] = _name;
-		//emit NewUser(id,_name);
+		emit NewUser(msg.sender, _name);
 	}
 }
