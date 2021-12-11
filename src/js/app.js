@@ -103,8 +103,8 @@ App = {
   {
     var tmpString = "";
     tmpString = "<div class=\"message-container\">";
-    tmpString += "<div class=\"blockchat-message\">";
-    tmpString += "<img class=\"pfp-sender\" src=\"images/defaultpfp.png\" />";
+    tmpString += "<div class=\"blockchat-message-sender\">";
+    tmpString += "<img class=\"pfp-sender\" src=\"images/person-male.png\" />";
     tmpString += message;
     tmpString += "</div>";
     tmpString += "<div class=\"blockchat-time-container sent-time-sender\">";
@@ -118,7 +118,7 @@ App = {
   {
     var tmpString = "";
     tmpString = "<div class=\"message-container\">";
-    tmpString += "<div class=\"blockchat-message\">";
+    tmpString += "<div class=\"blockchat-message-receiver\">";
     tmpString += "<img class=\"pfp-receiver\" src=\"images/defaultpfp.png\" />";
     tmpString += message;
     tmpString += "</div>";
@@ -244,7 +244,8 @@ App = {
       }
       // this is the wallet address
       account = accounts[0];
-      receiverAccount = "0x572DFd6B26dc567C87F9013C1f54DA236b117b3e";
+      //receiverAccount = "0x572DFd6B26dc567C87F9013C1f54DA236b117b3e";
+      receiverAccount = "0x35792Ae6A80EB9F641321175b3Ee3fcc8a3b3C30"
       //testing if its sending all the correct information
       App.contracts.BlockchatMessenger.deployed().then(function(instance) {
         blockmessageInstance = instance;
@@ -402,7 +403,8 @@ App = {
       }
       // this is the wallet address
       account = accounts[0];
-      receiverAccount = "0x572DFd6B26dc567C87F9013C1f54DA236b117b3e";
+      //receiverAccount = "0x572DFd6B26dc567C87F9013C1f54DA236b117b3e";
+      receiverAccount = "0x35792Ae6A80EB9F641321175b3Ee3fcc8a3b3C30";
       //testing if its sending all the correct information
       App.contracts.BlockchatMessenger.deployed().then(function(instance) {
         blockmessageInstance = instance;
