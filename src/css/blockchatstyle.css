@@ -61,6 +61,11 @@ div.blockchat-container {
     display: none;
 }
 
+.emoji-icons {
+    cursor: pointer;
+    user-select: none;
+}
+
 .blockchat-time-container {
 	height: 25px;
 	padding: 1.5em 0;

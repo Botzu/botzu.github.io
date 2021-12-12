@@ -393,34 +393,8 @@ App = {
     });
   },
 
-  emojiToggle: function(event) {
-    var div = document.querySelector(".my_emoji");
-
-    var emoji_code = [ 128512,
-      128513,
-      128514,
-      128515,
-      128516,
-      128517,
-      128518,
-      128519,
-      128520,
-      128521,
-      128522,
-      128523,
-      128524,
-      128525
-    ];
-
-    // basically I want this one to be run once
-    
-    div.innerHTML = "";
-
+  emojiToggle: function(event) {  
     $(".my_emoji").toggle();
-
-    for (var index=0; index < emoji_code.length-1; index++){
-      div.innerHTML += "<span class = \"emoji-icons\" id = \""+emoji_code[index]+"\">" + "&#" + emoji_code[index] + "</span>";
-    }
   },
 
   insertEmoji: function(event){
