@@ -2,6 +2,8 @@ App = {
   web3Provider: null,
   contracts: {},
   contacts: [],
+  Users: [],
+  currentBlock: 0,
   // pre-defined function from truffle
   init: async function() {
     // load templates here and define variables for rows
@@ -29,6 +31,8 @@ App = {
       App.web3Provider = new Web3.providers.HttpProvider('http://localhost:7545');
     }
     web3 = new Web3(App.web3Provider);
+    App.currentBlock = await web3.eth.getBlockNumber();
+    console.log(App.currentBlock);
     return App.initContract();
   },
 
@@ -41,6 +45,7 @@ App = {
 
       // set the provider for contract
       App.contracts.BlockchatBlockchain.setProvider(App.web3Provider);
+
       return App.checkUser();
     });
     $.getJSON('BlockchatMessenger.json', function(data) {
@@ -50,7 +55,6 @@ App = {
 
       // set the provider for contract
       App.contracts.BlockchatMessenger.setProvider(App.web3Provider);
-      //App.initMessages();
       return App.getMessageFromLogs();
     });
     return App.bindEvents();
@@ -59,10 +63,17 @@ App = {
   bindEvents: function() {
     $(document).on('click', '.sendmsg', App.handleMessage);
     $(document).on('click', '.regUser', App.handleNickname);
-    $(document).on('click', '.list-group-item', App.selectContact);
+    $(document).on('click', '.contact-group-item', App.selectContact);
     $(document).on('click', '.add-button', App.addContact);
     $(document).on('click', '.emoji-icons', App.insertEmoji);
     $(document).on('click', '#emoji', App.emojiToggle);
+    $(document).on('click', '.contactItem', App.setContactItem)
+  },
+
+  setContactItem: function(event) {
+    event.preventDefault();
+    var cName = $('#Search');
+    cName.val($(event.target).attr('name'));
   },
 
   addContact: function(event) {
@@ -80,9 +91,17 @@ App = {
       //testing if its sending all the correct information
       App.contracts.BlockchatBlockchain.deployed().then(function(instance) {
         blockchatInstance = instance;
+
          return blockchatInstance._returnAddressByName.call(cName, {from: account});
       }).then(function(result) {
-        App.handleContact(result,cName);
+        if(account == result)
+        {
+          // its us so no need to add
+        }
+        else
+        {
+          App.handleContact(result,cName);
+        }
       }).catch(function(err) {
         console.log(err.message);
       });
@@ -93,15 +112,15 @@ App = {
   {
     if(result != "0x0000000000000000000000000000000000000000")
     { 
-        var contactHandle = $('#contact-list-group');
         var duplicate = false;
+        var contactHandle = $('#contact-list-group');
         contactHandle.children().each(function () {
-          if ($(this).outerHTML() == cName)
-          {
-            duplicate = true;
-          }
+        if ($(this).attr('id') == result)
+        {
+          duplicate = true;
+        }
         });
-        var tmpString = "<li id = \""+result+"\" class=\"list-group-item\">";
+        var tmpString = "<li id = \""+result+"\" name = \""+cName+"\" class=\"list-group-item contact-group-item\">";
         tmpString += cName
         tmpString += "</li>";
         if(!duplicate)
@@ -115,14 +134,21 @@ App = {
     event.preventDefault();
     // grab the message from the text area to send
     var eventParent = $(event.target).parent();
-    eventParent.children().each(function () {
-      if ($(this).hasClass('selected'))
-      {
-        $(this).removeClass('selected');
-      }
-    });
-    $(event.target).addClass('selected');
-    return App.checkMessages($(event.target).attr('id'));
+    if($(event.target).hasClass('selected'))
+    {
+      // do nothing alread selected
+    }
+    else
+    {
+      eventParent.children().each(function () {
+        if ($(this).hasClass('selected'))
+        {
+          $(this).removeClass('selected');
+        }
+      });
+      $(event.target).addClass('selected');
+      return App.checkMessages($(event.target).attr('id'));
+    }
   },
 
   getSelectedContact: function()
@@ -162,13 +188,16 @@ App = {
     return convertedTime;
   },
 
-  addSenderMessage: function(timeStamp, message)
+  addSenderMessage: function(timeStamp, message, name)
   {
     var tmpString = "";
     tmpString = "<div class=\"message-container\">";
     tmpString += "<div class=\"blockchat-message-sender\">";
     tmpString += "<img class=\"pfp-sender\" src=\"images/genericpfp.png\" />";
     tmpString += message;
+    tmpString += "</div>";
+    tmpString += "<div class=\"blockchat-name-container\">";
+    tmpString += name;
     tmpString += "</div>";
     tmpString += "<div class=\"blockchat-time-container sent-time-sender\">";
     tmpString += timeStamp;
@@ -177,7 +206,7 @@ App = {
     msgHandle.innerHTML += tmpString;
   },
 
-  addReceiverMessage: function(timeStamp, message)
+  addReceiverMessage: function(timeStamp, message, name)
   {
     var tmpString = "";
     tmpString = "<div class=\"message-container\">";
@@ -185,7 +214,10 @@ App = {
     tmpString += "<img class=\"pfp-receiver\" src=\"images/defaultreceiver.png\" />";
     tmpString += message;
     tmpString += "</div>";
-    tmpString += "<div class=\"blockchat-time-container sent-time-sender\">";
+    tmpString += "<div class=\"blockchat-name-container-receiver \">";
+    tmpString += name;
+    tmpString += "</div>";
+    tmpString += "<div class=\"blockchat-time-container sent-time-receiver\">";
     tmpString += timeStamp;
     tmpString += "</div></div>";
     var msgHandle = document.getElementById('blockchat-container');
@@ -229,9 +261,10 @@ App = {
 
       App.contracts.BlockchatBlockchain.deployed().then(function(instance) {
         blockchatInstance = instance;
-        return blockchatInstance._returnUser.call({from: account});
+        return blockchatInstance._getUserByAddress.call(account);
       }).then(function(addressToName) {
           $('#welcome-back').html("Welcome back, "+addressToName);
+          return App.fillUserArray(blockchatInstance, account);
       }).catch(function(err) {
         //dispaly modal for users if not registered
           $('#content-container').addClass('block-content');
@@ -256,15 +289,14 @@ App = {
           tmpString += "</div>";
           tmpString += "</div>";
           var handle = document.getElementById('myModal');
-          handle.innerHTML = tmpString;
+          handle.innerHTML += tmpString;
           $('#myModal').css("display","block");
         });
     });
   },
 
-      // handles messages for our application
+  // handles grabbing messages from logs for our application
   getMessageFromLogs: async function() {
-    event.preventDefault();
     // grab the message from the text area to send
     var blockchatInstance;
     var account;
@@ -277,8 +309,8 @@ App = {
       }
       // this is the wallet address
       account = accounts[0];
-      //defaul receiver account
-      receiverAccount = "0x532D1edeB0102FD48E5422fa2Cb8Dee5886F6CC2";
+      //default receiver account
+      receiverAccount = "0x0000000000000000000000000000000000000000";
       //testing if its sending all the correct information
       App.contracts.BlockchatMessenger.deployed().then(function(instance) {
         blockmessageInstance = instance;
@@ -300,19 +332,32 @@ App = {
   },
 
   // returns a message from a message index
-  returnMessage: async function(instance, index, timeStamp, senderCheck) {
-    var returnMessage = await instance.getMessageByIndex.call(index);
-    var tmpString = "";
-    //sends the message to display on the screen
-    if(senderCheck)
-    {
-      App.addSenderMessage(timeStamp,returnMessage);
-    }
-    else
-    {
-      App.addReceiverMessage(timeStamp,returnMessage);
-    }
-    //console.log(returnMessage);
+  fillUserArray: async function(instance, account) {
+    instance.NewUser({
+      fromBlock: 0
+    }, function(error, event) { 
+      App.Users.push(event);
+      if(account != event.returnValues[0])
+      {
+        var userSearchHandle = document.getElementById('search-dropdown');
+        userSearchHandle.innerHTML += "<a href=\"#\" class=\"contactItem\" name = \""+event.returnValues[1]+"\" id = \""+event.returnValues[0]+"\">"+event.returnValues[1]+"</a>";
+        App.updateContacts(event.returnValues[0],event.returnValues[1]);
+      }
+      // need function to rename if no available
+    });
+  },
+
+  // in the off chance that a message comes in for someone that isn't added yet
+  updateContacts: function(address, name)
+  {
+    var contactHandle = $('#contact-list-group');
+    contactHandle.children().each(function () {
+      if ($(this).attr('id') == address)
+        {
+          $(this).attr('name',name);
+          $(this).html(name);
+        }
+      });
   },
 
   //this creates a new user
@@ -327,7 +372,7 @@ App = {
       fromBlock: 0,
       topics: account
     }, function(error, event){ 
-
+      //console.log(event.blockNumber);
       if(event.returnValues[0] == account)
       { 
         var contactCheck = false;
@@ -337,23 +382,62 @@ App = {
               contactCheck = true;
            }
         }
-        if(!contactCheck)
+        if((!contactCheck) && (receiver != "0x0000000000000000000000000000000000000000"))
         {
           App.contacts.push(event.returnValues[1]);
-
+          App.handleContact(event.returnValues[1], App.returnUserName(event.returnValues[1]));
         }
-
-        App.addSenderMessage(App.convertUnix(event.returnValues[2]),event.returnValues[3]);
+        if (event.returnValues[1] == receiver)
+        {
+          var name = App.returnUserName(event.returnValues[0]);
+          App.addSenderMessage(App.convertUnix(event.returnValues[2]),event.returnValues[3], name);
+        }
+        else
+        {
+          //drop it
+        }
       }
       else if(event.returnValues[1] == account)
       {
-          App.addReceiverMessage(App.convertUnix(event.returnValues[2]),event.returnValues[3]);
+        var contactCheck = false;
+        for (contact of App.contacts) {
+           if(contact == event.returnValues[0])
+           {
+              contactCheck = true;
+           }
+        }
+        if(!contactCheck)
+        {
+          App.contacts.push(event.returnValues[0]);
+          App.handleContact(event.returnValues[0], App.returnUserName(event.returnValues[0]));
+        }
+        if ((receiver == "0x0000000000000000000000000000000000000000") || (event.returnValues[0] == receiver))
+        {
+          var name = App.returnUserName(event.returnValues[0]);
+          App.addReceiverMessage(App.convertUnix(event.returnValues[2]),event.returnValues[3], name);
+        }
+        else
+        {
+          //drop it
+        }
       }
       else
       {
-        //log them in our side bar 
+        // this should never happen 
       }
     });
+
+  },
+
+  returnUserName: function(address)
+  {
+    for (user of App.Users) {
+      if(user.returnValues[0] == address)
+      {
+        return user.returnValues[1];
+      }
+    }
+    return "";
 
   },
 
@@ -362,7 +446,7 @@ App = {
     var newMessage = await instance.createMessage(receiver, message, tempTime, {from: account, gas: 1000000});
   },
 
-  // handles the user checks for our app
+  // handles creating a new account
   handleNickname: function(event) {
     event.preventDefault();
     // grab the message from the text area to send
@@ -386,7 +470,7 @@ App = {
         $('#myModal').css("display","none");
         $('#content-container').removeClass('block-content');
         $('#welcome-back').html("Welcome back, "+userName);
-        //return App.returnMessage(blockchatInstance, account);
+        return App.fillUserArray(blockchatInstance, account);
       }).catch(function(err) {
         console.log(err.message);
       });
@@ -394,10 +478,12 @@ App = {
   },
 
   emojiToggle: function(event) {  
+    event.preventDefault();
     $(".my_emoji").toggle();
   },
 
   insertEmoji: function(event){
+    event.preventDefault();
     document.getElementById("emj").value += event.target.textContent;
   },
 
@@ -418,14 +504,11 @@ App = {
       // this is the wallet address
       account = accounts[0];
       receiverAccount = App.getSelectedContact();
-      console.log(receiverAccount);
-      //mike 0x3b4e24cf159BbFCa9739fAeEC5400f1E5a1DC026
-      //testing if its sending all the correct information
       App.contracts.BlockchatMessenger.deployed().then(function(instance) {
         blockmessageInstance = instance;
         // Execute blockchat transaction example as transaction
         tempTime = Date.now();
-        //return App.handleCreateMessage(blockmessageInstance, receiverAccount, messageText, account, tempTime);
+        return App.handleCreateMessage(blockmessageInstance, receiverAccount, messageText, account, tempTime);
       }).then(function(result) {
         console.log("created new message successfully");
       }).catch(function(err) {

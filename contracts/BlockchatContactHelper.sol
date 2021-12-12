@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 // Daniel Timko, Harry Hokbyan, Mikhail Sharko, Atika Singh
-pragma solidity >=0.4.22 <0.9.0;
+pragma solidity ^0.8.4;
 pragma experimental ABIEncoderV2;
 
 import "./BlockchatBlockchain.sol";
