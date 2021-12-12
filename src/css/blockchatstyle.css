@@ -57,7 +57,9 @@ div.blockchat-container {
 	display: table;
 } 
 
-
+.my_emoji {
+    display: none;
+}
 
 .blockchat-time-container {
 	height: 25px;
