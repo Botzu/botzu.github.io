@@ -365,8 +365,8 @@ App = {
       });
     if(updateCheck)
     {
-      var handle = document.getElementById('myModal');
-      handle.innerHTML = "";
+      var msgHandle = document.getElementById('blockchat-container');
+      msgHandle.innerHTML = "";
       for (msg of App.Messages) {
         App.addMessageToDisplay(msg.returnValues[0],msg.returnValues[1],msg.returnValues[2],msg.returnValues[3],account,address);
       }
