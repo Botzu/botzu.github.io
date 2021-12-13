@@ -365,10 +365,10 @@ App = {
       });
     if(updateCheck)
     {
-      var handle = document.getElementById('myModal');
-      handle.innerHTML = "";
+      var msgHandle = document.getElementById('blockchat-container');
+      msgHandle.innerHTML = "";
       for (msg of App.Messages) {
-        App.addMessageToDisplay(msg.returnValues[0],msg.returnValues[1],msg.returnValues[2],msg.returnValues[3],account,receiver);
+        App.addMessageToDisplay(msg.returnValues[0],msg.returnValues[1],msg.returnValues[2],msg.returnValues[3],account,address);
       }
     }
   },
@@ -529,9 +529,19 @@ App = {
         blockmessageInstance = instance;
         // Execute blockchat transaction example as transaction
         tempTime = Date.now();
-        return App.handleCreateMessage(blockmessageInstance, receiverAccount, messageText, account, tempTime);
+        if(receiverAccount != "0x0000000000000000000000000000000000000000")
+        {
+          return App.handleCreateMessage(blockmessageInstance, receiverAccount, messageText, account, tempTime);
+        }
+        else
+        {
+          return "error";
+        }
       }).then(function(result) {
-        console.log("created new message successfully");
+        if(result != "error")
+        {
+          console.log("created new message successfully");
+        }
       }).catch(function(err) {
         console.log(err.message);
       });
