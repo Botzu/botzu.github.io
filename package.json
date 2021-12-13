@@ -19,8 +19,7 @@
   "scripts": {
     "dev": "lite-server",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -d src"
   },
   "repository": {
     "type": "git",
@@ -34,5 +33,5 @@
   "bugs": {
     "url": "https://github.com/Botzu/blockchat-blockchain/issues"
   },
-  "homepage": "https://github.com/Botzu/blockchat-blockchain"
+  "homepage": "https://botzu.github.io/blockchat-blockchain/src/index.html"
 }
