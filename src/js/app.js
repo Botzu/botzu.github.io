@@ -524,3 +524,15 @@ $(function() {
     App.init();
   });
 });
+/*
+<h2> Contact List </h2>
+<div class="col-xs-1 col-sm-2">
+<ul class="list-group">
+
+function contact_list(name, address)
+{
+    <li class="list-group-item" id=address>name</li>
+}
+</ul>
+</div>
+*/
