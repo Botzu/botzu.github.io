@@ -9,11 +9,11 @@
   "dependencies": {
     "@truffle/contract": "^4.3.43",
     "@truffle/hdwallet-provider": "^2.0.0",
-    "gh-pages": "^3.2.3",
     "mem": "^9.0.1",
     "web3": "^1.6.1"
   },
   "devDependencies": {
+    "gh-pages": "^3.2.3",
     "lite-server": "^2.6.1"
   },
   "scripts": {
