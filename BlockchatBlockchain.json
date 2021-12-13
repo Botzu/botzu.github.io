@@ -10290,7 +10290,7 @@
     "version": "0.8.4+commit.c7e474f2.Emscripten.clang"
   },
   "networks": {
-    "5777": {
+    "3": {
       "events": {},
       "links": {},
       "address": "0x25d1cd73938b312FDc24799101c3b7be14306ed5",
