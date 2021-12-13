@@ -2,7 +2,9 @@ App = {
   web3Provider: null,
   contracts: {},
   contacts: [],
+  fixContacts: [],
   Users: [],
+  Messages: [],
   currentBlock: 0,
   // pre-defined function from truffle
   init: async function() {
@@ -239,7 +241,10 @@ App = {
         msgHandle.innerHTML = "";
         receiverAccount = id;
         //check messages here
-        App.returnMessageLog(blockmessageInstance, receiverAccount, account);
+        for (msg of App.Messages) {
+          App.addMessageToDisplay(msg.returnValues[0],msg.returnValues[1],msg.returnValues[2],msg.returnValues[3],account,id);
+        }
+        //App.returnMessageLog(blockmessageInstance, receiverAccount, account);
       }).then(function(result) {
 
       }).catch(function(err) {
@@ -330,7 +335,7 @@ App = {
     console.log(returnMsgArray);
   },
 
-  // returns a message from a message index
+  // returns a log for users created
   fillUserArray: async function(instance, account) {
     instance.NewUser({
       fromBlock: 0
@@ -340,23 +345,32 @@ App = {
       {
         var userSearchHandle = document.getElementById('search-dropdown');
         userSearchHandle.innerHTML += "<a href=\"#\" class=\"contactItem\" name = \""+event.returnValues[1]+"\" id = \""+event.returnValues[0]+"\">"+event.returnValues[1]+"</a>";
-        App.updateContacts(event.returnValues[0],event.returnValues[1]);
+        App.updateContacts(event.returnValues[0],event.returnValues[1], account);
       }
-      // need function to rename if no available
     });
   },
 
   // in the off chance that a message comes in for someone that isn't added yet
-  updateContacts: function(address, name)
+  updateContacts: function(address, name, account)
   {
     var contactHandle = $('#contact-list-group');
+    var updateCheck = false;
     contactHandle.children().each(function () {
       if ($(this).attr('id') == address)
         {
           $(this).attr('name',name);
           $(this).html(name);
+          updateCheck = true;
         }
       });
+    if(updateCheck)
+    {
+      var handle = document.getElementById('myModal');
+      handle.innerHTML = "";
+      for (msg of App.Messages) {
+        App.addMessageToDisplay(msg.returnValues[0],msg.returnValues[1],msg.returnValues[2],msg.returnValues[3],account,receiver);
+      }
+    }
   },
 
   //this creates a new user
@@ -365,57 +379,65 @@ App = {
     console.log(Blockname);
   },
 
+  //logs messages that are created
   returnMessageLog: async function(instance, receiver, account) {
     instance.messageCreated({
       //filter: {_from: [receiver,account], _to: [receiver,account]}, 
       fromBlock: 0,
       topics: account
     }, function(error, event){ 
-      console.log(App.currentBlock); 
+      //console.log(App.currentBlock); 
+      App.Messages.push(event);
       receiver = App.getSelectedContact();
-      if(event.returnValues[0] == account)
+      App.addMessageToDisplay(event.returnValues[0],event.returnValues[1],event.returnValues[2],event.returnValues[3],account,receiver);
+    });
+
+  },
+
+  // function to add messages to the main display
+  addMessageToDisplay: async function(_from, _to, timestamp, message, _filterFrom, _filterTo) {
+      if(_from == _filterFrom)
       { 
         var contactCheck = false;
         for (contact of App.contacts) {
-           if(contact == event.returnValues[1])
+           if(contact == _to)
            {
               contactCheck = true;
            }
         }
         if(!contactCheck)
         {
-          App.contacts.push(event.returnValues[1]);
-          App.handleContact(event.returnValues[1], App.returnUserName(event.returnValues[1]));
+          App.contacts.push(_to);
+          App.handleContact(_to, App.returnUserName(_to));
         }
-        if (event.returnValues[1] == receiver)
+        if (_to == _filterTo)
         {
-          var name = App.returnUserName(event.returnValues[0]);
-          App.addSenderMessage(App.convertUnix(event.returnValues[2]),event.returnValues[3], name);
+          App.addSenderMessage(App.convertUnix(timestamp),message, "(You)");
         }
         else
         {
           //drop it
         }
       }
-      else if(event.returnValues[1] == account)
+      else if(_to == _filterFrom)
       {
-        receiver = App.getSelectedContact();
+        _filterTo = App.getSelectedContact();
         var contactCheck = false;
         for (contact of App.contacts) {
-           if(contact == event.returnValues[0])
+           if(contact == _from)
            {
               contactCheck = true;
            }
         }
         if(!contactCheck)
         {
-          App.contacts.push(event.returnValues[0]);
-          App.handleContact(event.returnValues[0], App.returnUserName(event.returnValues[0]));
+          App.contacts.push(_from);
+          App.handleContact(_from, App.returnUserName(_from));
         }
-        if ((receiver == "0x0000000000000000000000000000000000000000") || (event.returnValues[0] == receiver))
+        if ((_filterTo == "0x0000000000000000000000000000000000000000") || (_from == _filterTo))
         {
-          var name = App.returnUserName(event.returnValues[0]);
-          App.addReceiverMessage(App.convertUnix(event.returnValues[2]),event.returnValues[3], name);
+          var name = App.returnUserName(_from);
+          App.addReceiverMessage(App.convertUnix(timestamp),message, name);
         }
         else
         {
@@ -424,10 +446,8 @@ App = {
       }
       else
       {
-        // this should never happen 
+        // this should never happen but if it does drop the message
       }
-    });
-
   },
 
   returnUserName: function(address)
