@@ -32,7 +32,6 @@ App = {
     }
     web3 = new Web3(App.web3Provider);
     App.currentBlock = await web3.eth.getBlockNumber();
-    console.log(App.currentBlock);
     return App.initContract();
   },
 
@@ -372,7 +371,8 @@ App = {
       fromBlock: 0,
       topics: account
     }, function(error, event){ 
-      //console.log(event.blockNumber);
+      console.log(App.currentBlock); 
+      receiver = App.getSelectedContact();
       if(event.returnValues[0] == account)
       { 
         var contactCheck = false;
@@ -382,7 +382,7 @@ App = {
               contactCheck = true;
            }
         }
-        if((!contactCheck) && (receiver != "0x0000000000000000000000000000000000000000"))
+        if(!contactCheck)
         {
           App.contacts.push(event.returnValues[1]);
           App.handleContact(event.returnValues[1], App.returnUserName(event.returnValues[1]));
@@ -399,6 +399,7 @@ App = {
       }
       else if(event.returnValues[1] == account)
       {
+        receiver = App.getSelectedContact();
         var contactCheck = false;
         for (contact of App.contacts) {
            if(contact == event.returnValues[0])
@@ -524,15 +525,3 @@ $(function() {
     App.init();
   });
 });
-/*
-<h2> Contact List </h2>
-<div class="col-xs-1 col-sm-2">
-<ul class="list-group">
-
-function contact_list(name, address)
-{
-    <li class="list-group-item" id=address>name</li>
-}
-</ul>
-</div>
-*/
