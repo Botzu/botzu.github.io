@@ -239,10 +239,10 @@ App = {
         messageInstance = instance;
         var msgHandle = document.getElementById('blockchat-container');
         msgHandle.innerHTML = "";
-        receiverAccount = id;
+        receiverAccount = App.getSelectedContact();
         //check messages here
         for (msg of App.Messages) {
-          App.addMessageToDisplay(msg.returnValues[0],msg.returnValues[1],msg.returnValues[2],msg.returnValues[3],account,id);
+          App.addMessageToDisplay(msg.returnValues[0],msg.returnValues[1],msg.returnValues[2],msg.returnValues[3],account,receiverAccount);
         }
         //App.returnMessageLog(blockmessageInstance, receiverAccount, account);
       }).then(function(result) {
