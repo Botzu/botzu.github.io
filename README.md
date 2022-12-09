@@ -6,7 +6,7 @@ Language: Solidity / NodeJS
 
 Project hosted live on an Infura node. 
 
-Accessible Site: https://botzu.github.io/blockchat-blockchain/
+Accessible Site: https://timko002.github.io/blockchat-blockchain/
 
 Requirements: 
 
