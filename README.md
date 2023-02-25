@@ -3,7 +3,8 @@
 A node website project built using truffle suite to host a blockchain messenger. 
 
 Demonstration:
-![image](https://user-images.githubusercontent.com/19398628/221350023-894dd7fa-3932-4742-be86-ab36f66323a5.png)
+
+![image](https://user-images.githubusercontent.com/19398628/221350111-5d9cb775-4b27-46c9-b730-78af5a1c17a4.png)
 
 
 Language: Solidity / NodeJS
