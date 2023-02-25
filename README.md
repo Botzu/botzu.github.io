@@ -1,6 +1,6 @@
 # blockchat-blockchain
 
-A node website project built using truffle suite host a blockchain messenger. 
+A node website project built using truffle suite to host a blockchain messenger. 
 
 Language: Solidity / NodeJS
 
