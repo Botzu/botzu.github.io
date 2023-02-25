@@ -13,6 +13,8 @@ Project hosted live on an Infura node.
 
 Accessible Site: https://timko002.github.io/blockchat-blockchain/
 
+Google Slides presentation: https://docs.google.com/presentation/d/1ECp4KLj540sWqCA9VmDu_W-MnxECQOicDLMZCx-PB8E/edit?usp=sharing
+
 Requirements: 
 
 * Metamask 
